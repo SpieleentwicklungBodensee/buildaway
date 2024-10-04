@@ -10,6 +10,25 @@ TW = 16
 TH = 16
 
 
+pygame.init()
+
+TILES = {'#': pygame.image.load('gfx/placeholder.png'),
+         }
+
+
+level = ['####################',
+         '#                  #',
+         '#                  #',
+         '#                  #',
+         '#                  #',
+         '#                  #',
+         '#                  #',
+         '#                  #',
+         '#                  #',
+         '#                  #',
+         '####################',
+         ]
+
 
 class Game():
     def __init__(self):
@@ -18,6 +37,13 @@ class Game():
     def render(self, screen, font):
         screen.fill((40,60,80))
         font.centerText(screen, 'HELLO WORLD', y=5)
+
+        # draw level
+        for y in range(len(level)):
+            for x in range(len(level[0])):
+                tile = level[y][x]
+                if tile in TILES:
+                    screen.blit(TILES[tile], (x * TW, y * TH))
 
     def update(self):
         pass

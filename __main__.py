@@ -43,6 +43,9 @@ class Application():
                 if e.key == pygame.K_ESCAPE:
                     self.running = False
 
+            elif e.type == pygame.QUIT:
+                self.running = False
+
     def run(self):
         self.game = Game()
 

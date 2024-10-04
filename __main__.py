@@ -20,6 +20,7 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'F': pygame.image.load('gfx/floor.png'),
          'G': pygame.image.load('gfx/floor_g.png'),
          '~': pygame.image.load('gfx/water.png'),
+         'O': pygame.image.load('gfx/rock.png'),
          }
 
 level = level_gen.run(1, 20, 11);
@@ -66,6 +67,9 @@ class Application():
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE:
                     self.running = False
+
+                elif e.key == pygame.K_F11:
+                    pygame.display.toggle_fullscreen()
 
             elif e.type == pygame.QUIT:
                 self.running = False

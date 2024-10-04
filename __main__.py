@@ -13,7 +13,13 @@ level_gen = Generator()
 
 pygame.init()
 
-TILES = {'#': pygame.image.load('gfx/placeholder.png'),
+TILES = {'#': pygame.image.load('gfx/wall.png'),
+         '1': pygame.image.load('gfx/dissolve_01.png'),
+         '2': pygame.image.load('gfx/dissolve_02.png'),
+         '3': pygame.image.load('gfx/dissolve_03.png'),
+         'F': pygame.image.load('gfx/floor.png'),
+         'G': pygame.image.load('gfx/floor_g.png'),
+         '~': pygame.image.load('gfx/water.png'),
          }
 
 level = level_gen.run(1, 20, 11);
@@ -23,7 +29,9 @@ class Game():
         self.scrollx = 0
 
     def render(self, screen, font):
-        screen.fill((40,60,80))
+        # draw sky
+        screen.fill((64,128,192))
+
         font.centerText(screen, 'ES SCROLLT...', y=5)
 
         # draw level
@@ -31,10 +39,10 @@ class Game():
             for x in range(len(level[0])):
                 tile = level[y][x]
                 if tile in TILES:
-                    screen.blit(TILES[tile], (x * TW - self.scrollx, y * TH))
+                    screen.blit(TILES[tile], (x * TW - self.scrollx, y * TH + 4))
 
     def update(self):
-        if self.scrollx > len(level[0]) * TW - SCR_W:
+        if self.scrollx >= len(level[0]) * TW - SCR_W:
             return
         self.scrollx += 1
 

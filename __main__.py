@@ -1,4 +1,5 @@
 import pygame
+import time
 
 from bitmapfont import BitmapFont
 from generator import Generator
@@ -21,13 +22,46 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'G': pygame.image.load('gfx/floor_g.png'),
          '~': pygame.image.load('gfx/water.png'),
          'O': pygame.image.load('gfx/rock.png'),
+
+         'P': pygame.image.load('gfx/player_01.png'),
+         'p': pygame.image.load('gfx/player_02.png'),
          }
 
 level = level_gen.run(1, 20, 11);
 
+
+class Player():
+    def __init__(self, x, y):
+        self.xpos = x
+        self.ypos = y
+
+    def getSprite(self):
+        if int(time.time() * 1000) % 400 < 200:
+            return TILES['P']
+        else:
+            return TILES['p']
+
 class Game():
     def __init__(self):
         self.scrollx = 0
+
+        # find player start position
+        for y in range(len(level)):
+            for x in range(len(level[0])):
+                if level[y][x] == 'P':
+                    self.player = Player(x * TW, y * TH)
+
+                    # remove the 'P' from level data
+                    self.setTile(x, y, ' ')
+
+    def setTile(self, x, y, tile):
+        level[y] = level[y][:x] + tile + level[y][x+1:]
+
+    def drawTile(self, screen, tile, x, y):
+        screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
+
+    def drawSprite(self, screen, tile, x, y):
+        screen.blit(tile, (x - self.scrollx, y + 4))
 
     def render(self, screen, font):
         # draw sky
@@ -40,12 +74,15 @@ class Game():
             for x in range(len(level[0])):
                 tile = level[y][x]
                 if tile in TILES:
-                    screen.blit(TILES[tile], (x * TW - self.scrollx, y * TH + 4))
+                    self.drawTile(screen, TILES[tile], x, y)
+
+        # draw player
+        self.drawSprite(screen, self.player.getSprite(), self.player.xpos, self.player.ypos)
 
     def update(self):
         if self.scrollx >= len(level[0]) * TW - SCR_W:
             return
-        self.scrollx += 1
+        self.scrollx += 0.5
 
 
 class Application():

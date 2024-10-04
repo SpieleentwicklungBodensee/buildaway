@@ -1,7 +1,7 @@
 import pygame
 
 from bitmapfont import BitmapFont
-
+from generator import Generator
 
 SCR_W = 320
 SCR_H = 180
@@ -9,26 +9,14 @@ SCR_H = 180
 TW = 16
 TH = 16
 
+level_gen = Generator()
 
 pygame.init()
 
 TILES = {'#': pygame.image.load('gfx/placeholder.png'),
          }
 
-
-level = ['####################',
-         '#                  #',
-         '#                  #',
-         '#                  #',
-         '#                  #',
-         '#                  #',
-         '#                  #',
-         '#                  #',
-         '#                  #',
-         '#                  #',
-         '####################',
-         ]
-
+level = level_gen.run(1, 20, 11);
 
 class Game():
     def __init__(self):

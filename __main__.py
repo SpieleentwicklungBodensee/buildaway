@@ -149,6 +149,15 @@ class Player():
 
         debugPrint('onground: %s' % self.onGround)
 
+        # upper collision (head)
+        if self.ydir < 0:
+            tilex1 = int(self.xpos / TW + 0.3)
+            tilex2 = int(self.xpos / TW + 0.7)
+            tiley = int(self.ypos / TH)
+            if getTile(tilex1, tiley) in OBSTACLES or getTile(tilex2, tiley) in OBSTACLES:
+                self.ypos = int(self.ypos / TH + 1) * TH
+                self.ydir = 0
+
         # update x position
         self.xpos += self.xdir
 
@@ -191,7 +200,7 @@ class Game():
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
-        
+
     def drawHalfTile(self,screen,tile,x,y):
         if CURRENTCOOLDOWN < TILECOOLDOWN:
             tile.set_alpha(70)
@@ -231,7 +240,7 @@ class Game():
             self.drawTile(screen, TILES['cursor_pressed'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
         else:
             self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
-        
+
         # draw incoming block
         incomingBlock = pygame.transform.scale(TILES['G'],(TW/2,TH/2))
         self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
@@ -277,7 +286,7 @@ class Application():
             e = pygame.event.poll()
             global CURRENTCOOLDOWN
             CURRENTCOOLDOWN += 1
-            
+
             if not e:
                 break
 

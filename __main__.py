@@ -46,8 +46,13 @@ level = level_gen.run(1, 200, 11);
 def getTile(x, y):
     if x >= len(level[0]):
         return '#'          # outside (to the right) of level area is always 'solid'
+    if x < 0:
+        return '#'          # outside (to the left) of level area is always 'solid'
+    
     if y >= len(level):
         return ' '          # outside (below) of level area is always 'empty'
+    if y < 0:
+        return ' '          # outside (above) of level area is always 'empty'
 
     return level[y][x]
 
@@ -272,8 +277,16 @@ class Application():
 
             if e.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'G')
-
+                x = int(pos[0]/TW + self.game.scrollx/TW)
+                y = int(pos[1]/TH)
+                setTile(x, y,'G')
+                # no check if we have some floors or greens there, and make the new block fitting to the others
+                if getTile(x, y + 1) == 'G':
+                    setTile(x, y + 1,'F')
+                if getTile(x, y - 1) == 'G':
+                    setTile(x, y, 'F')
+                if getTile(x, y - 1) == 'F':
+                    setTile(x, y, 'F')                
 
             elif e.type == pygame.KEYUP:
                 if e.key == pygame.K_LEFT:

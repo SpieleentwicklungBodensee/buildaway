@@ -57,7 +57,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
 FLOOR_TILES = ['#', '1', '2', '3', 'F', 'G', 'O']       # floor = player can stand on
 OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cannot walk into
 
-PLACEABLE_TILES = ['#', '1', 'F', 'O']                  # placeable = mouse player will place those
+PLACEABLE_TILES = ['1', 'O']                  # placeable = mouse player will place those
+
 
 level = level_gen.run(1, 200, 11);
 
@@ -243,7 +244,7 @@ class Game():
 
         self.leftPressed = False
         self.rightPressed = False
-        self.currentTile = 'G'
+        self.currentTile = PLACEABLE_TILES[0]
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))

@@ -298,6 +298,11 @@ class Game():
         y = int(pos[1]/TH)
 
         if getTile(x, y) == ' ':
+            # make sure end gate is not overdrawn
+            if getTile(x, y-1) == 'D' or getTile(x-1, y) == 'D' or getTile(x-1, y-1) == 'D':
+                DENYSOUND.play(0)
+                return
+
             if CURRENTCOOLDOWN > TILECOOLDOWN:
                 CURRENTCOOLDOWN = 0
                 setTile(x, y,self.currentTile)

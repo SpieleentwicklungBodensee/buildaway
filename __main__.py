@@ -82,13 +82,14 @@ class Player():
             else:
                 return TILES['p']
 
-    def jump(self):
-        self.shouldJump = True
+    def jump(self, state):
+        self.shouldJump = state
 
     def update(self):
         if self.shouldJump:
             if self.onGround:
                 self.ydir = -3
+                self.shouldJump = False
 
         # gravity part 1
         tilex = int(self.xpos / TW + 0.5)
@@ -103,7 +104,6 @@ class Player():
 
         self.ydir += 0.125
         self.onGround = False
-        self.shouldJump = False
 
         if self.ydir > MAX_GRAVITY:
             self.ydir = MAX_GRAVITY
@@ -176,8 +176,8 @@ class Game():
             if self.player.xdir > 0:
                 self.player.xdir = 0
 
-    def playerJump(self):
-        self.player.jump()
+    def playerJump(self, state):
+        self.player.jump(state)
 
     def render(self, screen, font):
         # draw sky
@@ -245,7 +245,7 @@ class Application():
                     self.game.playerRight(True)
 
                 elif e.key == pygame.K_UP:
-                    self.game.playerJump()
+                    self.game.playerJump(True)
 
             if e.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
@@ -258,6 +258,9 @@ class Application():
 
                 elif e.key == pygame.K_RIGHT:
                     self.game.playerRight(False)
+
+                elif e.key == pygame.K_UP:
+                    self.game.playerJump(False)
 
             elif e.type == pygame.QUIT:
                 self.running = False

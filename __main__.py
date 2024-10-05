@@ -12,9 +12,14 @@ TW = 16
 TH = 16
 
 MAX_GRAVITY = 2
+COYOTE_JUMP_TOLERANCE = 4
 
 TILECOOLDOWN=150
 CURRENTCOOLDOWN=150
+
+SCROLL_SPEED = 0.5
+
+DISSOLVE_SPEED = 5
 
 level_gen = Generator()
 
@@ -86,20 +91,17 @@ def updateDissolveTiles(tick):
     for x, y, t in dissolveTiles:
         count = tick - t
 
-        if count == 4:
+        if count == DISSOLVE_SPEED * 1:
             setTile(x, y, '2')
-        elif count == 8:
+        elif count == DISSOLVE_SPEED * 2:
             setTile(x, y, '3')
-        elif count == 12:
+        elif count == DISSOLVE_SPEED * 3:
             setTile(x, y, ' ')
             remove.append((x, y, t))
 
     for elem in remove:
         dissolveTiles.remove(elem)
 
-
-SCROLL_SPEED = 0.5
-COYOTE_JUMP_TOLERANCE = 4
 
 DEBUG_STRINGS = []
 

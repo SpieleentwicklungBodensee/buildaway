@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 
 from bitmapfont import BitmapFont
 from generator import Generator
@@ -198,6 +199,7 @@ class Game():
 
         self.leftPressed = False
         self.rightPressed = False
+        self.currentTile = 'G'
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
@@ -253,7 +255,7 @@ class Game():
                              (int(pos[0]/TW + self.scrollx/TW) * TW - self.scrollx,  int(pos[1]/TH + 1) * TH + 4, cooldownbar, 2) )
         
         # draw incoming block
-        incomingBlock = pygame.transform.scale(TILES['G'],(TW/2,TH/2))
+        incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))
         self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
     def update(self):
         # update level scroll
@@ -333,7 +335,8 @@ class Application():
                     x = int(pos[0]/TW + self.game.scrollx/TW)
 
                     y = int(pos[1]/TH)
-                    setTile(x, y,'G')
+                    setTile(x, y,self.game.currentTile)
+                    self.game.currentTile = random.choice(FLOOR_TILES)
                     # no check if we have some floors or greens there, and make the new block fitting to the others
                     if getTile(x, y + 1) == 'G':
                         setTile(x, y + 1,'F')

@@ -2,6 +2,7 @@ Must have:
 
 1. Randomize settable tiles
 1. Tetris-style view for next tile
+1. Zeitbegrenzung Klicken
 
 Nice to have:
 

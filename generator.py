@@ -36,6 +36,8 @@ class Generator(object):
 
         self.make_it_green(data)
 
+        self.make_rocks(data)
+
         self.make_player(data)
 
         # make each line as string
@@ -49,6 +51,13 @@ class Generator(object):
             data.grid[y][x] = element
         except IndexError:
             pass
+
+    def get_block(self, data, x, y):
+        try:
+            return data.grid[y][x]
+        except IndexError:
+            return ''
+
 
     def make_floors(self, data):
         ratio =   (data.width / data.height)
@@ -92,6 +101,24 @@ class Generator(object):
     def make_water(self, data):
         for x in range(data.width):
             data.grid[-1][x] = '~'
+
+    def make_rocks(self, data,):
+        for x in range(data.width):
+            
+            for y in range(data.height):
+
+                xdim = x / 80
+                ydim = y
+                val = self.noise([xdim, ydim, data.level/10+38291]) * 20
+                if val > 1:
+                    cur = data.grid[y][x]
+                    above = self.get_block(data, x, y - 1)
+                    below = self.get_block(data, x, y + 1)
+
+                    if cur == 'G' and above == ' ' and below == ' ':
+                        self.change_block(data, x, y, 'O')
+
+               
 
     def make_it_green(self, data,):
         for x in range(data.width):

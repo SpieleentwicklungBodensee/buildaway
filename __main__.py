@@ -140,7 +140,7 @@ class Game():
 
     def update(self):
         if self.scrollx < len(level[0]) * TW - SCR_W:
-            self.scrollx += 0.5
+            self.scrollx += 0.2
 
         self.player.update()
 
@@ -176,7 +176,7 @@ class Application():
                 elif e.key == pygame.K_UP:
                     self.game.playerJump()
             
-            if e.type == pygame.MOUSEBUTTONUP:
+            if e.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 self.game.setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'G')
   

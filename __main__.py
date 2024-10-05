@@ -12,7 +12,7 @@ TH = 16
 
 MAX_GRAVITY = 2
 
-TILECOOLDOWN=180
+TILECOOLDOWN=150
 
 level_gen = Generator()
 
@@ -282,9 +282,7 @@ class Application():
             if e.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if self.cooldown > TILECOOLDOWN:
-                    setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'G')
                     self.cooldown = 0
-
 
                     x = int(pos[0]/TW + self.game.scrollx/TW)
 

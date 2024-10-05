@@ -34,6 +34,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'P3': pygame.image.load('gfx/player_walk_03.png'),
          'P4': pygame.image.load('gfx/player_walk_04.png'),
          'P5': pygame.image.load('gfx/player_walk_05.png'),
+
+         'cursor': pygame.image.load('gfx/cursor.png'),
          }
 
 level = level_gen.run(1, 200, 11);
@@ -205,6 +207,10 @@ class Game():
 
         # draw player
         self.drawSprite(screen, self.player.getSprite(), self.player.xpos, self.player.ypos)
+
+        # draw mouse cursor
+        pos = pygame.mouse.get_pos()
+        self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
 
     def update(self):
         if self.scrollx < len(level[0]) * TW - SCR_W:

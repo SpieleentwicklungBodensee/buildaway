@@ -166,7 +166,7 @@ class Player():
     def jump(self, state):
         self.shouldJump = state
 
-    def update(self, tick):
+    def update(self, tick, scrollx):
         if self.shouldJump:
             if self.onGround or self.coyoteCount < COYOTE_JUMP_TOLERANCE:
                 self.ydir = -3
@@ -239,6 +239,10 @@ class Player():
 
         # fall into water
         if self.ypos > len(level) * TH + 50:
+            self.dead = True
+
+        # scrolled out of the screen
+        if self.xpos - scrollx  + TW< 0:
             self.dead = True
 
         # coyote jump counter
@@ -412,7 +416,7 @@ class Game():
             if self.player.xdir > 0:
                 self.player.xdir = 0
 
-        self.player.update(tick)
+        self.player.update(tick, self.scrollx)
 
         if self.player.dead:
             # respawn (for debug)

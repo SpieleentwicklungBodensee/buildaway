@@ -3,7 +3,7 @@ import time
 
 from bitmapfont import BitmapFont
 from generator import Generator
-
+from pygame.image import load
 SCR_W = 320
 SCR_H = 180
 
@@ -15,6 +15,9 @@ MAX_GRAVITY = 2
 level_gen = Generator()
 
 pygame.init()
+surf = load('gfx/cursor.png')
+cursor = pygame.cursors.Cursor((0,0), surf)
+pygame.mouse.set_cursor(cursor)
 
 TILES = {'#': pygame.image.load('gfx/wall.png'),
          '1': pygame.image.load('gfx/dissolve_01.png'),
@@ -202,6 +205,11 @@ class Application():
 
                 elif e.key == pygame.K_UP:
                     self.game.playerJump()
+
+            if e.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                self.game.setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'G')
+
 
             elif e.type == pygame.KEYUP:
                 if e.key == pygame.K_LEFT:

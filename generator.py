@@ -119,12 +119,12 @@ class Generator(object):
 
                     if cur == 'G' and above == ' ' and below == ' ':
                         self.change_block(data, x, y, 'O')
-                        if val > 2:
-                            self.change_block(data, x, y, '1')
                         if val > 3:
-                            self.change_block(data, x, y, '2')
-                        if val > 4:
-                            self.change_block(data, x, y, '2')
+                            self.change_block(data, x, y, '1')
+                        #if val > 3:
+                        #    self.change_block(data, x, y, '2')
+                        #if val > 4:
+                        #    self.change_block(data, x, y, '2')
 
     def make_walls(self, data,):
         for x in range(data.width):

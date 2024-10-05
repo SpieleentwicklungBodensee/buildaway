@@ -1,4 +1,5 @@
 import pygame
+import pygame._sdl2.controller
 import time
 import random
 
@@ -442,6 +443,19 @@ class Application():
 
         self.tick = 0
 
+        # init joysticks
+        pygame.joystick.init()
+        pygame._sdl2.controller.init()
+
+        self.controllers = []
+
+        print('found %s joysticks' % pygame.joystick.get_count())
+        for i in range(pygame.joystick.get_count()):
+            iscontroller = pygame._sdl2.controller.is_controller(i)
+            print('joystick %i is game controller: %s' % (i, iscontroller))
+            joy = pygame.joystick.Joystick(i)
+            self.controllers.append(pygame._sdl2.controller.Controller.from_joystick(joy))
+
     def controls(self):
         while True:
             e = pygame.event.poll()
@@ -472,10 +486,10 @@ class Application():
                 elif e.key == pygame.K_UP or e.key == pygame.K_w:
                     self.game.playerJump(True)
 
-            if e.type == pygame.MOUSEBUTTONDOWN:
+            elif e.type == pygame.MOUSEBUTTONDOWN:
                 self.game.click(True)
 
-            if e.type == pygame.MOUSEBUTTONUP:
+            elif e.type == pygame.MOUSEBUTTONUP:
                 self.game.click(False)
 
             elif e.type == pygame.KEYUP:
@@ -487,6 +501,33 @@ class Application():
 
                 elif e.key == pygame.K_UP or e.key == pygame.K_w:
                     self.game.playerJump(False)
+
+            elif e.type == pygame.CONTROLLERBUTTONDOWN:
+                if e.button == pygame.CONTROLLER_BUTTON_DPAD_LEFT:
+                    self.game.playerLeft(True)
+                if e.button == pygame.CONTROLLER_BUTTON_DPAD_RIGHT:
+                    self.game.playerRight(True)
+                if e.button == pygame.CONTROLLER_BUTTON_A or e.button == pygame.CONTROLLER_BUTTON_B:
+                    self.game.playerJump(True)
+
+            elif e.type == pygame.CONTROLLERBUTTONUP:
+                if e.button == pygame.CONTROLLER_BUTTON_DPAD_LEFT:
+                    self.game.playerLeft(False)
+                if e.button == pygame.CONTROLLER_BUTTON_DPAD_RIGHT:
+                    self.game.playerRight(False)
+                if e.button == pygame.CONTROLLER_BUTTON_A or e.button == pygame.CONTROLLER_BUTTON_B:
+                    self.game.playerJump(False)
+
+            elif e.type == pygame.CONTROLLERAXISMOTION:
+                if e.axis == pygame.CONTROLLER_AXIS_LEFTX:
+                    value = max(-1, e.value / 32767)
+                    if value > 0.75:
+                        self.game.playerRight(True)
+                    elif value < -0.75:
+                        self.game.playerLeft(True)
+                    else:
+                        self.game.playerLeft(False)
+                        self.game.playerRight(False)
 
             elif e.type == pygame.QUIT:
                 self.running = False

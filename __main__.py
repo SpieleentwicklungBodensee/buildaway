@@ -293,24 +293,29 @@ class Game():
         self.mousepressed = state
 
         pos = pygame.mouse.get_pos()
-        if CURRENTCOOLDOWN > TILECOOLDOWN:
-            CURRENTCOOLDOWN = 0
 
-            x = int(pos[0]/TW + self.scrollx/TW)
+        x = int(pos[0]/TW + self.scrollx/TW)
+        y = int(pos[1]/TH)
 
-            y = int(pos[1]/TH)
-            PLACESOUND.play()
-            setTile(x, y,self.currentTile)
-            self.currentTile = random.choice(PLACEABLE_TILES)
-            # no check if we have some floors or greens there, and make the new block fitting to the others
-            if getTile(x, y + 1) == 'G':
-                setTile(x, y + 1,'F')
-            if getTile(x, y - 1) == 'G':
-                setTile(x, y, 'F')
-            if getTile(x, y - 1) == 'F':
-                setTile(x, y, 'F')
+        if getTile(x, y) == ' ':
+            if CURRENTCOOLDOWN > TILECOOLDOWN:
+                CURRENTCOOLDOWN = 0
+                setTile(x, y,self.currentTile)
+                self.currentTile = random.choice(PLACEABLE_TILES)
+                PLACESOUND.play()
+            else:
+                DENYSOUND.play()
         else:
             DENYSOUND.play()
+
+        # TODO this is probably deprecated
+        # no check if we have some floors or greens there, and make the new block fitting to the others
+        #if getTile(x, y + 1) == 'G':
+        #    setTile(x, y + 1,'F')
+        #if getTile(x, y - 1) == 'G':
+        #    setTile(x, y, 'F')
+        #if getTile(x, y - 1) == 'F':
+        #    setTile(x, y, 'F')
 
     def render(self, screen, font):
         global CURRENTCOOLDOWN

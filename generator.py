@@ -2,9 +2,10 @@ from perlin_noise import PerlinNoise
 
 class GeneratorData(object):
     def __init__(self, level, width, height):
-        self.level = level + 473284
+        self.level = level
         self.width = width
         self.height = height
+        self.seed = 473284
         self.grid = [[' ' for x in range(width)] for y in range(height)]
 
 class Generator(object):
@@ -68,7 +69,7 @@ class Generator(object):
             for x in range(data.width):
                 xdim = x / 80
                 ydim = y
-                cur = self.noise([xdim, ydim, data.level/10]) * 20
+                cur = self.noise([xdim, ydim, (data.level + data.seed)/10]) * 20
                 if cur > threshold:
                     #print (cur)
                     #if data[y][x] != '~':
@@ -92,7 +93,7 @@ class Generator(object):
             for x in range(data.width):
                 xdim = x / 80  + 20
                 ydim = y / 10
-                cur = self.noise([xdim, ydim, data.level/10+1234]) * 20
+                cur = self.noise([xdim, ydim, (data.level + data.seed)/10+1234]) * 20
                 if cur > threshold and y < 7:
                     #print (cur)
                     #if data[y][x] != '~':
@@ -109,7 +110,7 @@ class Generator(object):
 
                 xdim = x / 80
                 ydim = y
-                val = self.noise([xdim, ydim, data.level/10+38291]) * 20
+                val = self.noise([xdim, ydim, (data.level + data.seed)/10+38291]) * 20
                 if val > 1:
                     cur = data.grid[y][x]
                     above = self.get_block(data, x, y - 1)

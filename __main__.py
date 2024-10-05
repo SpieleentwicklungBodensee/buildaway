@@ -183,6 +183,9 @@ class Game():
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
+        
+    def drawHalfTile(self,screen,tile,x,y):
+        screen.blit(tile, (x * TW - self.scrollx + 4,y*TH + TH/2))
 
     def drawSprite(self, screen, tile, x, y):
         screen.blit(tile, (x - self.scrollx, y + 4))
@@ -227,6 +230,9 @@ class Game():
         else:
             self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
         
+        # draw incoming block
+        incomingBlock = pygame.transform.scale(TILES['G'],(TW/2,TH/2))
+        self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
     def update(self):
         if self.scrollx < len(level[0]) * TW - SCR_W:
             self.scrollx += SCROLL_SPEED
@@ -254,6 +260,7 @@ class Application():
         while True:
             e = pygame.event.poll()
             self.cooldown += 1
+            
             if not e:
                 break
 

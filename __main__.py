@@ -207,7 +207,7 @@ class Game():
     def playerJump(self, state):
         self.player.jump(state)
 
-    def render(self, screen, font):
+    def render(self, screen, font, app):
         # draw sky
         screen.fill((64,128,192))
 
@@ -229,6 +229,11 @@ class Game():
             self.drawTile(screen, TILES['cursor_pressed'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
         else:
             self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
+        if app.cooldown < TILECOOLDOWN:
+            cooldownbar = (TILECOOLDOWN - app.cooldown) / TILECOOLDOWN * TW
+            pygame.draw.rect(screen, 
+                             (255 - (app.cooldown / TILECOOLDOWN * 255), (app.cooldown / TILECOOLDOWN * 255) , 0), 
+                             (int(pos[0]/TW + self.scrollx/TW) * TW - self.scrollx,  int(pos[1]/TH + 1) * TH + 4, cooldownbar, 2) )
         
         # draw incoming block
         incomingBlock = pygame.transform.scale(TILES['G'],(TW/2,TH/2))
@@ -327,7 +332,7 @@ class Application():
         self.game = Game()
 
         while self.running:
-            self.game.render(self.screen, self.font)
+            self.game.render(self.screen, self.font, self)
 
             self.font.locate(0, 0)
             for string in DEBUG_STRINGS:

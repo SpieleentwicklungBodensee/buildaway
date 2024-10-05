@@ -32,6 +32,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'G': pygame.image.load('gfx/floor_g.png'),
          '~': pygame.image.load('gfx/water.png'),
          '~~': pygame.image.load('gfx/water_02.png'),
+         '~~~': pygame.image.load('gfx/water_03.png'),
+         '~~~~': pygame.image.load('gfx/water_04.png'),
          'O': pygame.image.load('gfx/rock.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
@@ -241,10 +243,16 @@ class Game():
                 tile = level[y][x]
                 if tile in TILES:
                     if tile == '~':
-                        if int(time.time() * 1000) % 500 < 200:
+                        if int(time.time() * 1000) % 400 < 100:
                             tile = '~'
-                        else:
+                        if 100 <= int(time.time() * 1000) % 400 < 200:
                             tile = '~~'
+                        if 200 <= int(time.time() * 1000) % 400 < 300:
+                            tile = '~~~'
+                        if 300 <= int(time.time() * 1000) % 400 < 400:
+                            tile = '~~~~'
+                        #else:
+                        #    tile = '~~'
                     self.drawTile(screen, TILES[tile], x, y)
 
         # draw player

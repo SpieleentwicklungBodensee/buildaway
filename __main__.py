@@ -114,12 +114,6 @@ class Player():
         tilex = int(self.xpos / TW + 0.5)
         tiley = int((self.ypos + TH * 0.9999) / TH)
         oldy = tiley
-        if getTile(tilex, tiley) == ' ':
-            overground = True
-        else:
-            overground = False
-
-        #debugPrint('overground: %s' % overground)
 
         self.ydir += 0.125
         self.onGround = False
@@ -127,20 +121,22 @@ class Player():
         if self.ydir > MAX_GRAVITY:
             self.ydir = MAX_GRAVITY
 
-        # update position
-        self.xpos += self.xdir
+        # update y position
         self.ypos += self.ydir
 
         # gravity part 2
         tilex = int(self.xpos / TW + 0.5)
         tiley = int((self.ypos + TH * 0.9999) / TH)
         if getTile(tilex, tiley) not in [' ', '~']:
-            if overground and tiley > oldy:
+            if tiley > oldy:
                 self.ydir = 0
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
 
         #debugPrint('onground: %s' % self.onGround)
+
+        # update x position
+        self.xpos += self.xdir
 
         # horizontal collision (to the right)
         if self.xdir > 0:

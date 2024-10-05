@@ -24,5 +24,5 @@ To be discussed:
 
 Ideen um das Gameplay zu verbessern:
 
-- in die PLACEABLE_TILES auch die Spikes (also 'schlechte' Tiles) aufnehmen
+- in die PLACEABLE_TILES auch die Spikes (also 'schlechte' Tiles) aufnehmen, dafuer die Cooldown Time verringern (oder abschaffen)
 - evtl oben einen Tile-Vorrat anzeigen aus dem man als Maus-Spieler das Tile jedesmal auswaehlt, dieser wird automatisch random aufgefuellt

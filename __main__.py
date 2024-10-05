@@ -36,6 +36,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'P5': pygame.image.load('gfx/player_walk_05.png'),
 
          'cursor': pygame.image.load('gfx/cursor.png'),
+         'P6': pygame.image.load('gfx/player_jump_01.png'),
+         'P7': pygame.image.load('gfx/player_jump_02.png'),
          }
 
 level = level_gen.run(1, 200, 11);
@@ -79,21 +81,25 @@ class Player():
         self.dead = False
 
     def getSprite(self):
-        if self.xdir == 0:
-            return TILES['Pi']
-        else:
-            if int(time.time() * 1000) % 500 < 100:
-                return TILES['P1']
-            if 100 <= int(time.time() * 1000) % 500 < 200:
-                return TILES['P2']
-            if 200 <= int(time.time() * 1000) % 500 < 300:
-                return TILES['P3']
-            if 300 <= int(time.time() * 1000) % 500 < 400:
-                return TILES['P4']
-            if 400 <= int(time.time() * 1000) % 500 < 500:
-                return TILES['P5']
+        if self.ydir == 0:
+            if self.xdir == 0:
+                return TILES['Pi']
             else:
-                return TILES['P1']
+                if int(time.time() * 1000) % 500 < 100:
+                    return TILES['P1']
+                if 100 <= int(time.time() * 1000) % 500 < 200:
+                    return TILES['P2']
+                if 200 <= int(time.time() * 1000) % 500 < 300:
+                    return TILES['P3']
+                if 300 <= int(time.time() * 1000) % 500 < 400:
+                    return TILES['P4']
+                if 400 <= int(time.time() * 1000) % 500 < 500:
+                    return TILES['P5']
+                else:
+                    return TILES['P1']
+        else:
+            return TILES['P6']
+              
 
     def jump(self, state):
         self.shouldJump = state

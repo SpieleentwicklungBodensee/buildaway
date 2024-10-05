@@ -43,6 +43,8 @@ class Generator(object):
 
         self.make_player(data)
 
+        self.make_door(data)
+
         # make each line as string
         for y in range(data.height):
             data.grid[y] = ''.join(data.grid[y])
@@ -162,4 +164,24 @@ class Generator(object):
                     if cur == 'G' and last == ' ':
                         self.change_block(data, x, y-1, 'P')
                         return
+                    last = cur
+
+
+    def make_door(self, data,):
+        for x in reversed(range(data.width)):
+            if x < data.width - 4:
+                last = ''
+                for y in range(data.height):
+                    cur = data.grid[y][x]
+
+                    if cur == 'G' and last == ' ':
+                        d1 = data.grid[y-1][x]
+                        d2 = data.grid[y-1][x]
+                        d3 = data.grid[y-2][x-1]
+                        d4 = data.grid[y-2][x-1]
+                        f1 = data.grid[y][x-1]
+
+                        if d1 == ' ' and d2 == ' ' and d3 == ' ' and d4 == ' ' and f1 == 'G':
+                            self.change_block(data, x-1, y-2, 'D')
+                            return
                     last = cur

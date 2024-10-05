@@ -71,6 +71,8 @@ class Player():
         self.onGround = False
         self.shouldJump = False
 
+        self.dead = False
+
     def getSprite(self):
         if self.xdir == 0:
             return TILES['Pi']
@@ -139,9 +141,7 @@ class Player():
 
         # fall into water
         if self.ypos > len(level) * TH + 50:
-            # respawn (for debug)
-            self.ypos = -TH
-            self.ydir = 0
+            self.dead = True
 
 class Game():
     def __init__(self):
@@ -200,6 +200,13 @@ class Game():
             self.scrollx += SCROLL_SPEED
 
         self.player.update()
+
+        if self.player.dead:
+            # respawn (for debug)
+            self.player.ypos = -TH
+            self.player.xpos = self.scrollx + 5 * TW
+            self.player.ydir = 0
+            self.player.dead = False
 
 class Application():
     def __init__(self):

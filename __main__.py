@@ -300,7 +300,7 @@ class Game():
         if getTile(x, y) == ' ':
             # make sure end gate is not overdrawn
             if getTile(x, y-1) == 'D' or getTile(x-1, y) == 'D' or getTile(x-1, y-1) == 'D':
-                DENYSOUND.play(0)
+                DENYSOUND.play()
                 return
 
             if CURRENTCOOLDOWN > TILECOOLDOWN:

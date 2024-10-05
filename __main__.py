@@ -13,6 +13,7 @@ TH = 16
 MAX_GRAVITY = 2
 
 TILECOOLDOWN=150
+CURRENTCOOLDOWN=150
 
 level_gen = Generator()
 
@@ -29,6 +30,7 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'F': pygame.image.load('gfx/floor.png'),
          'G': pygame.image.load('gfx/floor_g.png'),
          '~': pygame.image.load('gfx/water.png'),
+         '~~': pygame.image.load('gfx/water_02.png'),
          'O': pygame.image.load('gfx/rock.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
@@ -44,6 +46,9 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'P7': pygame.image.load('gfx/player_jump_02.png'),
          }
 
+FLOOR_TILES = ['#', '1', '2', '3', 'F', 'G', 'O']       # floor = player can stand on
+OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cannot walk into
+
 level = level_gen.run(1, 200, 11);
 
 
@@ -52,7 +57,7 @@ def getTile(x, y):
         return '#'          # outside (to the right) of level area is always 'solid'
     if x < 0:
         return '#'          # outside (to the left) of level area is always 'solid'
-    
+
     if y >= len(level):
         return ' '          # outside (below) of level area is always 'empty'
     if y < 0:
@@ -134,33 +139,43 @@ class Player():
         self.ypos += self.ydir
 
         # gravity part 2
-        tilex = int(self.xpos / TW + 0.5)
+        tilex1 = int(self.xpos / TW + 0.3)
+        tilex2 = int(self.xpos / TW + 0.7)
         tiley = int((self.ypos + TH * 0.9999) / TH)
-        if getTile(tilex, tiley) not in [' ', '~']:
+        if getTile(tilex1, tiley) in FLOOR_TILES or getTile(tilex2, tiley) in FLOOR_TILES:
             if tiley > oldy:
                 self.ydir = 0
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
 
-        #debugPrint('onground: %s' % self.onGround)
+        debugPrint('onground: %s' % self.onGround)
+
+        # upper collision (head)
+        if self.ydir < 0:
+            tilex1 = int(self.xpos / TW + 0.3)
+            tilex2 = int(self.xpos / TW + 0.7)
+            tiley = int(self.ypos / TH)
+            if getTile(tilex1, tiley) in OBSTACLES or getTile(tilex2, tiley) in OBSTACLES:
+                self.ypos = int(self.ypos / TH + 1) * TH
+                self.ydir = 0
 
         # update x position
         self.xpos += self.xdir
 
         # horizontal collision (to the right)
         if self.xdir > 0:
-            tilex = int(self.xpos / TW + 0.9999)
+            tilex = int(self.xpos / TW + 0.7)
             tiley = int(self.ypos / TH)
-            if getTile(tilex, tiley) not in [' ', '~']:
-                self.xpos = int(self.xpos / TW) * TW
+            if getTile(tilex, tiley) in OBSTACLES:
+                self.xpos = int(self.xpos / TW) * TW + TW * 0.3
                 self.xdir = 0
 
         # horizontal collision (to the left)
         if self.xdir < 0:
-            tilex = int(self.xpos / TW)
+            tilex = int(self.xpos / TW + 0.3)
             tiley = int(self.ypos / TH)
-            if getTile(tilex, tiley) not in [' ', '~']:
-                self.xpos = int(self.xpos / TW + 0.9999) * TW
+            if getTile(tilex, tiley) in OBSTACLES:
+                self.xpos = int(self.xpos / TW) * TW + TW * 0.7
                 self.xdir = 0
 
         # fall into water
@@ -181,28 +196,25 @@ class Game():
                     # remove the 'P' from level data
                     setTile(x, y, ' ')
 
+        self.leftPressed = False
+        self.rightPressed = False
+
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
-        
+
     def drawHalfTile(self,screen,tile,x,y):
+        if CURRENTCOOLDOWN < TILECOOLDOWN:
+            tile.set_alpha(70)
         screen.blit(tile, (x * TW - self.scrollx + 4,y*TH + TH/2))
 
     def drawSprite(self, screen, tile, x, y):
         screen.blit(tile, (x - self.scrollx, y + 4))
 
     def playerLeft(self, state):
-        if state:
-            self.player.xdir = -1
-        else:
-            if self.player.xdir < 0:
-                self.player.xdir = 0
+        self.leftPressed = state
 
     def playerRight(self, state):
-        if state:
-            self.player.xdir = 1
-        else:
-            if self.player.xdir > 0:
-                self.player.xdir = 0
+        self.rightPressed = state
 
     def playerJump(self, state):
         self.player.jump(state)
@@ -218,6 +230,11 @@ class Game():
             for x in range(len(level[0])):
                 tile = level[y][x]
                 if tile in TILES:
+                    if tile == '~':
+                        if int(time.time() * 1000) % 500 < 200:
+                            tile = '~'
+                        else:
+                            tile = '~~'
                     self.drawTile(screen, TILES[tile], x, y)
 
         # draw player
@@ -239,8 +256,22 @@ class Game():
         incomingBlock = pygame.transform.scale(TILES['G'],(TW/2,TH/2))
         self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
     def update(self):
+        # update level scroll
         if self.scrollx < len(level[0]) * TW - SCR_W:
             self.scrollx += SCROLL_SPEED
+
+        # update player
+        if self.leftPressed:
+            self.player.xdir = -1
+        else:
+            if self.player.xdir < 0:
+                self.player.xdir = 0
+
+        if self.rightPressed:
+            self.player.xdir = 1
+        else:
+            if self.player.xdir > 0:
+                self.player.xdir = 0
 
         self.player.update()
 
@@ -264,8 +295,9 @@ class Application():
     def controls(self):
         while True:
             e = pygame.event.poll()
-            self.cooldown += 1
-            
+            global CURRENTCOOLDOWN
+            CURRENTCOOLDOWN += 1
+
             if not e:
                 break
 
@@ -295,8 +327,8 @@ class Application():
             if e.type == pygame.MOUSEBUTTONDOWN:
                 self.game.mousepressed = True
                 pos = pygame.mouse.get_pos()
-                if self.cooldown > TILECOOLDOWN:
-                    self.cooldown = 0
+                if CURRENTCOOLDOWN > TILECOOLDOWN:
+                    CURRENTCOOLDOWN = 0
 
                     x = int(pos[0]/TW + self.game.scrollx/TW)
 
@@ -308,7 +340,7 @@ class Application():
                     if getTile(x, y - 1) == 'G':
                         setTile(x, y, 'F')
                     if getTile(x, y - 1) == 'F':
-                        setTile(x, y, 'F')                                   
+                        setTile(x, y, 'F')
 
 
             if e.type == pygame.MOUSEBUTTONUP:

@@ -16,6 +16,7 @@ COYOTE_JUMP_TOLERANCE = 4
 
 TILECOOLDOWN=150
 CURRENTCOOLDOWN=150
+STARTLIFES=5
 
 SCROLL_SPEED = 0.5
 
@@ -130,6 +131,7 @@ class Player():
         self.onGround = False
         self.shouldJump = False
         self.coyoteCount = 0
+        self.lifes = 4
 
         self.dead = False
 
@@ -237,16 +239,21 @@ class Player():
 
         # fall into water
         if self.ypos > len(level) * TH + 50:
-            self.dead = True
+            self.die()
+            self.lifes = self.lifes - 1
+            print(self.ypos)
 
         # coyote jump counter
         if not self.onGround:
             self.coyoteCount += 1
-
+    def die(self):
+        self.dead = True
+        self.lifes = self.lifes - 1 
 class Game():
     def __init__(self):
         self.reset()
         self.levelno = 1
+        self.gameover = False
 
     def reset(self):
         self.scrollx = 0
@@ -269,6 +276,10 @@ class Game():
         self.levelFinishCount = 0
 
     def drawTile(self, screen, tile, x, y):
+        if self.player.dead:
+            pos = pygame.mouse.get_pos()
+            self.drawSprite(screen, self.player.getSprite(), pos[0]-self.scrollx, pos[1]+4)
+            self.player.dead = False
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
 
     def drawHalfTile(self,screen,tile,x,y):
@@ -314,6 +325,7 @@ class Game():
                     self.drawTile(screen, TILES[tile], x, y)
 
         # draw player
+
         self.drawSprite(screen, self.player.getSprite(), self.player.xpos, self.player.ypos)
 
         # draw mouse cursor
@@ -335,6 +347,8 @@ class Game():
         # draw congratz message
         if self.levelFinished:
             font.centerText(screen, 'LEVEL COMPLETE', y=10)
+        if self.player.dead:
+            self.scrollx = 0
 
     def update(self, tick):
         if self.levelFinished:
@@ -360,15 +374,18 @@ class Game():
             if self.player.xdir > 0:
                 self.player.xdir = 0
 
-        self.player.update(tick)
-
         if self.player.dead:
             # respawn (for debug)
             DEATHSOUND.play()
-            self.player.ypos = -TH
-            self.player.xpos = self.scrollx + 5 * TW
-            self.player.ydir = 0
-            self.player.dead = False
+            self.player.lifes = self.player.lifes - 1
+            if self.player.lifes == 0:
+                self.gameover = True
+                self.levelno = 0
+
+        self.player.update(tick)
+
+
+
 
         # update level
         updateDissolveTiles(tick)
@@ -475,6 +492,7 @@ class Application():
         while self.running:
 
             self.game.render(self.screen, self.font)
+            debugPrint(self.game.player.dead)
 
             self.font.locate(0, 0)
             for string in DEBUG_STRINGS:

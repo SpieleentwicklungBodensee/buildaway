@@ -109,6 +109,7 @@ class Player():
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
 
+
         debugPrint('onground: %s' % self.onGround)
 
 class Game():
@@ -150,6 +151,8 @@ class Game():
     def render(self, screen, font):
         # draw sky
         screen.fill((64,128,192))
+
+        font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
 
         # draw level
         for y in range(len(level)):

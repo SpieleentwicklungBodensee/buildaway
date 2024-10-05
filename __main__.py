@@ -424,7 +424,7 @@ class Application():
 
         while self.running:
 
-            self.game.render(self.screen, self.font, self)
+            self.game.render(self.screen, self.font)
 
             self.font.locate(0, 0)
             for string in DEBUG_STRINGS:

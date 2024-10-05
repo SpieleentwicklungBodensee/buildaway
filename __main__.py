@@ -30,7 +30,7 @@ pygame.mouse.set_cursor(cursor)
 pygame.mixer.init()
 pygame.mixer.music.load('sfx/NichtEinFlohWalzerWeitEntfernt.mp3')
 pygame.mixer.music.set_volume(0.1)
-pygame.mixer.music.play()
+pygame.mixer.music.play(-1)
 
 PLACESOUND = pygame.mixer.Sound('sfx/Plop.mp3')
 DENYSOUND = pygame.mixer.Sound('sfx/Deny.wav')

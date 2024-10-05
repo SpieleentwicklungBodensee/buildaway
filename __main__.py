@@ -250,6 +250,8 @@ class Game():
         self.rightPressed = False
         self.currentTile = PLACEABLE_TILES[0]
 
+        self.levelFinished = False
+
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
 
@@ -314,7 +316,14 @@ class Game():
         incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))
         self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
 
+        # draw congratz message
+        if self.levelFinished:
+            font.centerText(screen, 'LEVEL COMPLETE', y=10)
+
     def update(self, tick):
+        if self.levelFinished:
+            return
+
         # update level scroll
         if self.scrollx < len(level[0]) * TW - SCR_W:
             self.scrollx += SCROLL_SPEED
@@ -343,6 +352,10 @@ class Game():
 
         # update level
         updateDissolveTiles(tick)
+
+        # check for exit
+        if getTile(int(self.player.xpos / TW), int(self.player.ypos / TH - 1)) == 'D':
+            self.levelFinished = True
 
 
 class Application():

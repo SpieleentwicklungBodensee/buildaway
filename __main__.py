@@ -28,9 +28,13 @@ surf = load('gfx/cursor.png')
 cursor = pygame.cursors.Cursor((0,0), surf)
 pygame.mouse.set_cursor(cursor)
 pygame.mixer.init()
+pygame.mixer.music.load('sfx/NichtEinFlohWalzerWeitEntfernt.mp3')
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play()
 
 PLACESOUND = pygame.mixer.Sound('sfx/Plop.mp3')
 DENYSOUND = pygame.mixer.Sound('sfx/Deny.wav')
+DEATHSOUND = pygame.mixer.Sound('sfx/Death_Scream.mp3')
 
 TILES = {'#': pygame.image.load('gfx/wall.png'),
          '1': pygame.image.load('gfx/dissolve_01.png'),
@@ -357,6 +361,7 @@ class Game():
 
         if self.player.dead:
             # respawn (for debug)
+            DEATHSOUND.play()
             self.player.ypos = -TH
             self.player.xpos = self.scrollx + 5 * TW
             self.player.ydir = 0

@@ -137,6 +137,12 @@ class Player():
                 self.xpos = int(self.xpos / TW + 0.9999) * TW
                 self.xdir = 0
 
+        # fall into water
+        if self.ypos > len(level) * TH + 50:
+            # respawn (for debug)
+            self.ypos = -TH
+            self.ydir = 0
+
 class Game():
     def __init__(self):
         self.scrollx = 0

@@ -18,7 +18,7 @@ COYOTE_JUMP_TOLERANCE = 4
 TILECOOLDOWN=150
 CURRENTCOOLDOWN=150
 
-SCROLL_SPEED = 5.5
+SCROLL_SPEED = 0.5
 
 DISSOLVE_SPEED = 6
 
@@ -70,7 +70,7 @@ OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cann
 PLACEABLE_TILES = ['1', 'O']                  # placeable = mouse player will place those
 
 
-level = level_gen.run(1, 60, 11);
+level = level_gen.run(1, 60, 11)
 
 
 def getTile(x, y):

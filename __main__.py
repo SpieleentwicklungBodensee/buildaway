@@ -64,7 +64,7 @@ OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cann
 PLACEABLE_TILES = ['1', 'O']                  # placeable = mouse player will place those
 
 
-level = level_gen.run(1, 200, 11);
+level = level_gen.run(1, 60, 11);
 
 
 def getTile(x, y):
@@ -234,6 +234,10 @@ class Player():
 
 class Game():
     def __init__(self):
+        self.reset()
+        self.levelno = 1
+
+    def reset(self):
         self.scrollx = 0
         self.mousepressed = False
 
@@ -249,6 +253,9 @@ class Game():
         self.leftPressed = False
         self.rightPressed = False
         self.currentTile = PLACEABLE_TILES[0]
+
+        self.levelFinished = False
+        self.levelFinishCount = 0
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
@@ -314,7 +321,17 @@ class Game():
         incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))
         self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
 
+        # draw congratz message
+        if self.levelFinished:
+            font.centerText(screen, 'LEVEL COMPLETE', y=10)
+
     def update(self, tick):
+        if self.levelFinished:
+            self.levelFinishCount += 1
+            if self.levelFinishCount == 100:
+                self.nextLevel()
+            return
+
         # update level scroll
         if self.scrollx < len(level[0]) * TW - SCR_W:
             self.scrollx += SCROLL_SPEED
@@ -343,6 +360,18 @@ class Game():
 
         # update level
         updateDissolveTiles(tick)
+
+        # check for exit
+        if getTile(int(self.player.xpos / TW), int(self.player.ypos / TH - 1)) == 'D':
+            self.levelFinished = True
+
+    def nextLevel(self):
+        self.levelno += 1
+
+        global level
+        level = level_gen.run(self.levelno, 60 + self.levelno * 5, 11);
+
+        self.reset()
 
 
 class Application():

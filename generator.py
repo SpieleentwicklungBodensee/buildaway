@@ -17,8 +17,8 @@ class Generator(object):
     def run(self, level, width, height):
         if level == -1:
             return  ['          P                                                             ',
-                 '        D                                                               ',
-                 '                                                          ##            ',
+                 '                                                                        ',
+                 '                          D                               ##            ',
                  'GGGGGGGGGGGG                                                         D  ',
                  'FFFF                      GG                                            ',
                  'FFFF                      FF                  ###                    GGG',

@@ -148,12 +148,12 @@ class Player():
                     sprite = TILES['P4']
                 else:
                     sprite = TILES['P5']
-                
+
                 if self.xdir < 0:
                     sprite = pygame.transform.flip(sprite, True, False)  # Flip horizontally, not vertically
 
-                return sprite 
-           
+                return sprite
+
         else:
             if self.xdir < 0:
                 return pygame.transform.flip(TILES['P6'],True, False)
@@ -288,6 +288,30 @@ class Game():
     def playerJump(self, state):
         self.player.jump(state)
 
+    def click(self, state):
+        global CURRENTCOOLDOWN
+        self.mousepressed = state
+
+        pos = pygame.mouse.get_pos()
+        if CURRENTCOOLDOWN > TILECOOLDOWN:
+            CURRENTCOOLDOWN = 0
+
+            x = int(pos[0]/TW + self.scrollx/TW)
+
+            y = int(pos[1]/TH)
+            PLACESOUND.play()
+            setTile(x, y,self.currentTile)
+            self.currentTile = random.choice(PLACEABLE_TILES)
+            # no check if we have some floors or greens there, and make the new block fitting to the others
+            if getTile(x, y + 1) == 'G':
+                setTile(x, y + 1,'F')
+            if getTile(x, y - 1) == 'G':
+                setTile(x, y, 'F')
+            if getTile(x, y - 1) == 'F':
+                setTile(x, y, 'F')
+        else:
+            DENYSOUND.play()
+
     def render(self, screen, font):
         global CURRENTCOOLDOWN
         # draw sky
@@ -337,6 +361,9 @@ class Game():
             font.centerText(screen, 'LEVEL COMPLETE', y=10)
 
     def update(self, tick):
+        global CURRENTCOOLDOWN
+        CURRENTCOOLDOWN += 1
+
         if self.levelFinished:
             self.levelFinishCount += 1
             if self.levelFinishCount == 100:
@@ -401,8 +428,6 @@ class Application():
     def controls(self):
         while True:
             e = pygame.event.poll()
-            global CURRENTCOOLDOWN
-            CURRENTCOOLDOWN += 1
 
             if not e:
                 break
@@ -431,30 +456,10 @@ class Application():
                     self.game.playerJump(True)
 
             if e.type == pygame.MOUSEBUTTONDOWN:
-                self.game.mousepressed = True
-                pos = pygame.mouse.get_pos()
-                if CURRENTCOOLDOWN > TILECOOLDOWN:
-                    CURRENTCOOLDOWN = 0
-
-                    x = int(pos[0]/TW + self.game.scrollx/TW)
-
-                    y = int(pos[1]/TH)
-                    PLACESOUND.play()
-                    setTile(x, y,self.game.currentTile)
-                    self.game.currentTile = random.choice(PLACEABLE_TILES)
-                    # no check if we have some floors or greens there, and make the new block fitting to the others
-                    if getTile(x, y + 1) == 'G':
-                        setTile(x, y + 1,'F')
-                    if getTile(x, y - 1) == 'G':
-                        setTile(x, y, 'F')
-                    if getTile(x, y - 1) == 'F':
-                        setTile(x, y, 'F')
-                else:
-                    DENYSOUND.play()
+                self.game.click(True)
 
             if e.type == pygame.MOUSEBUTTONUP:
-                self.game.mousepressed = False
-
+                self.game.click(False)
 
             elif e.type == pygame.KEYUP:
                 if e.key == pygame.K_LEFT or e.key == pygame.K_a:

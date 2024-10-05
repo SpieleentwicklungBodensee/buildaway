@@ -1,18 +1,18 @@
 Must have:
 
-1. Randomize settable tiles
-1. Tetris-style view for next tile
-1. Zeitbegrenzung Klicken
+1. [x] Randomize settable tiles
+1. [x] Tetris-style view for next tile
+1. [x] Zeitbegrenzung Klicken
 
 Nice to have:
 
 1. SFX
-   1. Death
-   1. Jump
-   1. Start
-   1. Background Music
-   1. Tile gets set
-   1. Walk
+   1. [ ] Death
+   1. [ ] ~Jump~
+   1. [ ] Start
+   1. [ ] Background Music
+   1. [ ] Tile gets set
+   1. [ ] ~Walk~
 
 To be discussed:
 

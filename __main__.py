@@ -12,9 +12,14 @@ TW = 16
 TH = 16
 
 MAX_GRAVITY = 2
+COYOTE_JUMP_TOLERANCE = 4
 
 TILECOOLDOWN=150
 CURRENTCOOLDOWN=150
+
+SCROLL_SPEED = 0.5
+
+DISSOLVE_SPEED = 5
 
 level_gen = Generator()
 
@@ -32,6 +37,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'G': pygame.image.load('gfx/floor_g.png'),
          '~': pygame.image.load('gfx/water.png'),
          '~~': pygame.image.load('gfx/water_02.png'),
+         '~~~': pygame.image.load('gfx/water_03.png'),
+         '~~~~': pygame.image.load('gfx/water_04.png'),
          'O': pygame.image.load('gfx/rock.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
@@ -49,6 +56,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
 
 FLOOR_TILES = ['#', '1', '2', '3', 'F', 'G', 'O']       # floor = player can stand on
 OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cannot walk into
+
+PLACEABLE_TILES = ['#', '1', 'F', 'O']                  # placeable = mouse player will place those
 
 level = level_gen.run(1, 200, 11);
 
@@ -72,9 +81,27 @@ def setTile(x, y, tile):
 
     level[y] = level[y][:x] + tile + level[y][x+1:]
 
+dissolveTiles = set()
+def dissolveTile(x, y, tick):
+    dissolveTiles.add((x, y, tick))
 
-SCROLL_SPEED = 0.5
-COYOTE_JUMP_TOLERANCE = 4
+def updateDissolveTiles(tick):
+    remove = []
+
+    for x, y, t in dissolveTiles:
+        count = tick - t
+
+        if count == DISSOLVE_SPEED * 1:
+            setTile(x, y, '2')
+        elif count == DISSOLVE_SPEED * 2:
+            setTile(x, y, '3')
+        elif count == DISSOLVE_SPEED * 3:
+            setTile(x, y, ' ')
+            remove.append((x, y, t))
+
+    for elem in remove:
+        dissolveTiles.remove(elem)
+
 
 DEBUG_STRINGS = []
 
@@ -121,7 +148,7 @@ class Player():
     def jump(self, state):
         self.shouldJump = state
 
-    def update(self):
+    def update(self, tick):
         if self.shouldJump:
             if self.onGround or self.coyoteCount < COYOTE_JUMP_TOLERANCE:
                 self.ydir = -3
@@ -145,12 +172,22 @@ class Player():
         tilex1 = int(self.xpos / TW + 0.3)
         tilex2 = int(self.xpos / TW + 0.7)
         tiley = int((self.ypos + TH * 0.9999) / TH)
-        if getTile(tilex1, tiley) in FLOOR_TILES or getTile(tilex2, tiley) in FLOOR_TILES:
+
+        tile1 = getTile(tilex1, tiley)
+        tile2 = getTile(tilex2, tiley)
+        if tile1 in FLOOR_TILES or tile2 in FLOOR_TILES:
             if tiley > oldy:
                 self.ydir = 0
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
                 self.coyoteCount = 0
+
+        # broesel away
+        if self.onGround:
+            if tile1 == '1':
+                dissolveTile(tilex1, tiley, tick)
+            if tile2 == '1':
+                dissolveTile(tilex2, tiley, tick)
 
         debugPrint('onground: %s' % self.onGround)
 
@@ -241,10 +278,16 @@ class Game():
                 tile = level[y][x]
                 if tile in TILES:
                     if tile == '~':
-                        if int(time.time() * 1000) % 500 < 200:
+                        if int(time.time() * 1000) % 400 < 100:
                             tile = '~'
-                        else:
+                        if 100 <= int(time.time() * 1000) % 400 < 200:
                             tile = '~~'
+                        if 200 <= int(time.time() * 1000) % 400 < 300:
+                            tile = '~~~'
+                        if 300 <= int(time.time() * 1000) % 400 < 400:
+                            tile = '~~~~'
+                        #else:
+                        #    tile = '~~'
                     self.drawTile(screen, TILES[tile], x, y)
 
         # draw player
@@ -258,14 +301,15 @@ class Game():
             self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
         if CURRENTCOOLDOWN < TILECOOLDOWN:
             cooldownbar = (TILECOOLDOWN - CURRENTCOOLDOWN) / TILECOOLDOWN * TW
-            pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255), 
-                                      (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0), 
+            pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255),
+                                      (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0),
                                       (int(pos[0]/TW + self.scrollx/TW) * TW - self.scrollx,  int(pos[1]/TH + 1) * TH + 4, cooldownbar, 2) )
-        
+
         # draw incoming block
         incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))
         self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
-    def update(self):
+
+    def update(self, tick):
         # update level scroll
         if self.scrollx < len(level[0]) * TW - SCR_W:
             self.scrollx += SCROLL_SPEED
@@ -283,7 +327,7 @@ class Game():
             if self.player.xdir > 0:
                 self.player.xdir = 0
 
-        self.player.update()
+        self.player.update(tick)
 
         if self.player.dead:
             # respawn (for debug)
@@ -291,6 +335,10 @@ class Game():
             self.player.xpos = self.scrollx + 5 * TW
             self.player.ydir = 0
             self.player.dead = False
+
+        # update level
+        updateDissolveTiles(tick)
+
 
 class Application():
     def __init__(self):
@@ -301,6 +349,8 @@ class Application():
 
         self.clock = pygame.time.Clock()
         self.cooldown = 0
+
+        self.tick = 0
 
     def controls(self):
         while True:
@@ -344,7 +394,7 @@ class Application():
 
                     y = int(pos[1]/TH)
                     setTile(x, y,self.game.currentTile)
-                    self.game.currentTile = random.choice(FLOOR_TILES)
+                    self.game.currentTile = random.choice(PLACEABLE_TILES)
                     # no check if we have some floors or greens there, and make the new block fitting to the others
                     if getTile(x, y + 1) == 'G':
                         setTile(x, y + 1,'F')
@@ -375,6 +425,7 @@ class Application():
         self.game = Game()
 
         while self.running:
+
             self.game.render(self.screen, self.font)
 
             self.font.locate(0, 0)
@@ -386,9 +437,10 @@ class Application():
 
             self.controls()
 
-            self.game.update()
+            self.game.update(self.tick)
 
             self.clock.tick(60)
+            self.tick += 1
 
         pygame.quit()
 

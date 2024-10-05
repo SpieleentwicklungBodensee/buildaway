@@ -5,10 +5,10 @@ class Generator(object):
         pass
 
     def run(self, level, width, height):
-        return  ['                                                                        ',
+        return  ['          P                                                             ',
                  '                                                                        ',
-                 '          P                                               ##            ',
-                 'GGGGGGGGGGG                                                             ',
+                 '                                                          ##            ',
+                 'GGGGGGGGGGGG                                                            ',
                  'FFFF                      GG                                            ',
                  'FFFF                      FF                  ###                     GG',
                  'FFFF                     GFFG                                         FF',

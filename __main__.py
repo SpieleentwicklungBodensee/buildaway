@@ -32,6 +32,30 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
 level = level_gen.run(1, 20, 11);
 
 
+def getTile(x, y):
+    if x >= len(level[0]):
+        return '#'          # outside (to the right) of level area is always 'solid'
+    if y >= len(level):
+        return ' '          # outside (below) of level area is always 'empty'
+
+    return level[y][x]
+
+def setTile(x, y, tile):
+    if x >= len(level[0]) or y >= len(level):
+        return
+
+    level[y] = level[y][:x] + tile + level[y][x+1:]
+
+
+SCROLL_SPEED = 0.5
+
+DEBUG_STRING = ''
+
+def debugPrint(stuff):
+    global DEBUG_STRING
+    DEBUG_STRING = str(stuff).upper()
+
+
 class Player():
     def __init__(self, x, y):
         self.xpos = x
@@ -55,11 +79,13 @@ class Player():
     def update(self):
         # gravity part 1
         tilex = int(self.xpos / TW)
-        tiley = int(self.ypos / TH)
-        if level[tiley][tilex] == ' ':
+        tiley = int((self.ypos + TH-1) / TH)
+        if getTile(tilex, tiley) == ' ':
             overground = True
         else:
             overground = False
+
+        debugPrint(overground)
 
         self.ydir += 0.125
         self.onGround = False
@@ -73,9 +99,9 @@ class Player():
 
         # gravity part 2
         tilex = int(self.xpos / TW)
-        tiley = int(self.ypos / TH) +1
-        if level[tiley][tilex] not in [' ', '~']:
-            if overground:
+        tiley = int((self.ypos + TH-1) / TH)
+        if getTile(tilex, tiley) not in [' ', '~']:
+            if overground and self.ydir > 0:
                 self.ydir = 0
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
@@ -91,10 +117,7 @@ class Game():
                     self.player = Player(x * TW, y * TH)
 
                     # remove the 'P' from level data
-                    self.setTile(x, y, ' ')
-
-    def setTile(self, x, y, tile):
-        level[y] = level[y][:x] + tile + level[y][x+1:]
+                    setTile(x, y, ' ')
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
@@ -137,7 +160,7 @@ class Game():
 
     def update(self):
         if self.scrollx < len(level[0]) * TW - SCR_W:
-            self.scrollx += 0.5
+            self.scrollx += SCROLL_SPEED
 
         self.player.update()
 
@@ -164,6 +187,13 @@ class Application():
                 elif e.key == pygame.K_F11:
                     pygame.display.toggle_fullscreen()
 
+                elif e.key == pygame.K_F12:
+                    global SCROLL_SPEED
+                    if SCROLL_SPEED == 0:
+                        SCROLL_SPEED = 0.5
+                    else:
+                        SCROLL_SPEED = 0
+
                 elif e.key == pygame.K_LEFT:
                     self.game.playerLeft(True)
 
@@ -188,6 +218,8 @@ class Application():
 
         while self.running:
             self.game.render(self.screen, self.font)
+
+            self.font.drawText(self.screen, DEBUG_STRING, 0, 0)
 
             pygame.display.flip()
 

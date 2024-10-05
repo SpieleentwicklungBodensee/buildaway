@@ -117,6 +117,22 @@ class Player():
 
         debugPrint('onground: %s' % self.onGround)
 
+        # horizontal collision (to the right)
+        if self.xdir > 0:
+            tilex = int(self.xpos / TW + 0.9999)
+            tiley = int(self.ypos / TH)
+            if getTile(tilex, tiley) not in [' ', '~']:
+                self.xpos = int(self.xpos / TW) * TW
+                self.xdir = 0
+
+        # horizontal collision (to the left)
+        if self.xdir < 0:
+            tilex = int(self.xpos / TW)
+            tiley = int(self.ypos / TH)
+            if getTile(tilex, tiley) not in [' ', '~']:
+                self.xpos = int(self.xpos / TW + 0.9999) * TW
+                self.xdir = 0
+
 class Game():
     def __init__(self):
         self.scrollx = 0

@@ -28,7 +28,9 @@ surf = load('gfx/cursor.png')
 cursor = pygame.cursors.Cursor((0,0), surf)
 pygame.mouse.set_cursor(cursor)
 pygame.mixer.init()
+
 PLACESOUND = pygame.mixer.Sound('sfx/Plop.mp3')
+DENYSOUND = pygame.mixer.Sound('sfx/Deny.wav')
 
 TILES = {'#': pygame.image.load('gfx/wall.png'),
          '1': pygame.image.load('gfx/dissolve_01.png'),
@@ -406,7 +408,8 @@ class Application():
                         setTile(x, y, 'F')
                     if getTile(x, y - 1) == 'F':
                         setTile(x, y, 'F')
-
+                else:
+                    DENYSOUND.play()
 
             if e.type == pygame.MOUSEBUTTONUP:
                 self.game.mousepressed = False

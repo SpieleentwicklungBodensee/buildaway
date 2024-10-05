@@ -12,12 +12,15 @@ TH = 16
 
 MAX_GRAVITY = 2
 
+TILECOOLDOWN=180
+
 level_gen = Generator()
 
 pygame.init()
 surf = load('gfx/cursor.png')
 cursor = pygame.cursors.Cursor((0,0), surf)
 pygame.mouse.set_cursor(cursor)
+
 
 TILES = {'#': pygame.image.load('gfx/wall.png'),
          '1': pygame.image.load('gfx/dissolve_01.png'),
@@ -233,11 +236,12 @@ class Application():
         self.font = BitmapFont('gfx/heimatfont.png', 8, 8, [(255, 255, 255)])
 
         self.clock = pygame.time.Clock()
+        self.cooldown = 0
 
     def controls(self):
         while True:
             e = pygame.event.poll()
-
+            self.cooldown += 1
             if not e:
                 break
 
@@ -266,7 +270,11 @@ class Application():
 
             if e.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'G')
+                if self.cooldown > TILECOOLDOWN:
+                    setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'G')
+                    self.cooldown = 0
+                else:
+                    print("X")
 
 
             elif e.type == pygame.KEYUP:

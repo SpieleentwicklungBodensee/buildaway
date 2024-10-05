@@ -376,13 +376,13 @@ class Application():
                     else:
                         SCROLL_SPEED = 0
 
-                elif e.key == pygame.K_LEFT:
+                elif e.key == pygame.K_LEFT or e.key == pygame.K_a:
                     self.game.playerLeft(True)
 
-                elif e.key == pygame.K_RIGHT:
+                elif e.key == pygame.K_RIGHT or e.key == pygame.K_d:
                     self.game.playerRight(True)
 
-                elif e.key == pygame.K_UP:
+                elif e.key == pygame.K_UP or e.key == pygame.K_w:
                     self.game.playerJump(True)
 
             if e.type == pygame.MOUSEBUTTONDOWN:
@@ -410,13 +410,13 @@ class Application():
 
 
             elif e.type == pygame.KEYUP:
-                if e.key == pygame.K_LEFT:
+                if e.key == pygame.K_LEFT or e.key == pygame.K_a:
                     self.game.playerLeft(False)
 
-                elif e.key == pygame.K_RIGHT:
+                elif e.key == pygame.K_RIGHT or e.key == pygame.K_d:
                     self.game.playerRight(False)
 
-                elif e.key == pygame.K_UP:
+                elif e.key == pygame.K_UP or e.key == pygame.K_w:
                     self.game.playerJump(False)
 
             elif e.type == pygame.QUIT:

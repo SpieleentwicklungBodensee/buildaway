@@ -104,7 +104,7 @@ class Player():
                     return TILES['P1']
         else:
             return TILES['P6']
-              
+
 
     def jump(self, state):
         self.shouldJump = state
@@ -124,7 +124,7 @@ class Player():
         else:
             overground = False
 
-        debugPrint('overground: %s' % overground)
+        #debugPrint('overground: %s' % overground)
 
         self.ydir += 0.125
         self.onGround = False
@@ -145,7 +145,7 @@ class Player():
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
 
-        debugPrint('onground: %s' % self.onGround)
+        #debugPrint('onground: %s' % self.onGround)
 
         # horizontal collision (to the right)
         if self.xdir > 0:
@@ -207,7 +207,7 @@ class Game():
         # draw sky
         screen.fill((64,128,192))
 
-        font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
+        #font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
 
         # draw level
         for y in range(len(level)):

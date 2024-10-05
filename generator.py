@@ -87,7 +87,7 @@ class Generator(object):
                     self.change_block(data, x, y, 'F')
 
         # make more platforms above
-        threshold = 3
+        threshold = 5
         for y in range(data.height):
             for x in range(data.width):
                 xdim = x / 80  + 20

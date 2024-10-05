@@ -155,7 +155,10 @@ class Player():
                 return sprite 
            
         else:
-            return TILES['P6']
+            if self.xdir < 0:
+                return pygame.transform.flip(TILES['P6'],True, False)
+            else:
+                return TILES['P6']
 
 
     def jump(self, state):

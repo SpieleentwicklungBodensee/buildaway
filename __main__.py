@@ -48,6 +48,7 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          '~~~~': pygame.image.load('gfx/water_04.png'),
          'O': pygame.image.load('gfx/rock.png'),
          'D': pygame.image.load('gfx/door.png'),
+         'v': pygame.image.load('gfx/trapp_g.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
          'P1': pygame.image.load('gfx/player_walk_01.png'),
@@ -242,6 +243,12 @@ class Player():
         # coyote jump counter
         if not self.onGround:
             self.coyoteCount += 1
+
+        # collide with trap
+        tilex = int(self.xpos / TW + 0.5)
+        tiley = int(self.ypos / TH + 0.5)
+        if getTile(tilex, tiley) == 'v':
+            self.dead = True
 
 class Game():
     def __init__(self):

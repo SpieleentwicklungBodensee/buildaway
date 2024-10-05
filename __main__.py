@@ -28,9 +28,13 @@ surf = load('gfx/cursor.png')
 cursor = pygame.cursors.Cursor((0,0), surf)
 pygame.mouse.set_cursor(cursor)
 pygame.mixer.init()
+pygame.mixer.music.load('sfx/NichtEinFlohWalzerWeitEntfernt.mp3')
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play()
 
 PLACESOUND = pygame.mixer.Sound('sfx/Plop.mp3')
 DENYSOUND = pygame.mixer.Sound('sfx/Deny.wav')
+DEATHSOUND = pygame.mixer.Sound('sfx/Death_Scream.mp3')
 
 TILES = {'#': pygame.image.load('gfx/wall.png'),
          '1': pygame.image.load('gfx/dissolve_01.png'),
@@ -135,17 +139,21 @@ class Player():
                 return TILES['Pi']
             else:
                 if int(time.time() * 1000) % 500 < 100:
-                    return TILES['P1']
-                if 100 <= int(time.time() * 1000) % 500 < 200:
-                    return TILES['P2']
-                if 200 <= int(time.time() * 1000) % 500 < 300:
-                    return TILES['P3']
-                if 300 <= int(time.time() * 1000) % 500 < 400:
-                    return TILES['P4']
-                if 400 <= int(time.time() * 1000) % 500 < 500:
-                    return TILES['P5']
+                    sprite = TILES['P1']
+                elif 100 <= int(time.time() * 1000) % 500 < 200:
+                    sprite = TILES['P2']
+                elif 200 <= int(time.time() * 1000) % 500 < 300:
+                    sprite = TILES['P3']
+                elif 300 <= int(time.time() * 1000) % 500 < 400:
+                    sprite = TILES['P4']
                 else:
-                    return TILES['P1']
+                    sprite = TILES['P5']
+                
+                if self.xdir < 0:
+                    sprite = pygame.transform.flip(sprite, True, False)  # Flip horizontally, not vertically
+
+                return sprite 
+           
         else:
             return TILES['P6']
 
@@ -353,6 +361,7 @@ class Game():
 
         if self.player.dead:
             # respawn (for debug)
+            DEATHSOUND.play()
             self.player.ypos = -TH
             self.player.xpos = self.scrollx + 5 * TW
             self.player.ydir = 0

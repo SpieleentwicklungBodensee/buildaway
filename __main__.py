@@ -32,7 +32,7 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'p': pygame.image.load('gfx/player_02.png'),
          }
 
-level = level_gen.run(-1, 200, 11);
+level = level_gen.run(1, 200, 11);
 
 
 def getTile(x, y):

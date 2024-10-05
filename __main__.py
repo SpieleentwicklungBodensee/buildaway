@@ -27,7 +27,10 @@ pygame.init()
 surf = load('gfx/cursor.png')
 cursor = pygame.cursors.Cursor((0,0), surf)
 pygame.mouse.set_cursor(cursor)
+pygame.mixer.init()
 
+PLACESOUND = pygame.mixer.Sound('sfx/Plop.mp3')
+DENYSOUND = pygame.mixer.Sound('sfx/Deny.wav')
 
 TILES = {'#': pygame.image.load('gfx/wall.png'),
          '1': pygame.image.load('gfx/dissolve_01.png'),
@@ -395,6 +398,7 @@ class Application():
                     x = int(pos[0]/TW + self.game.scrollx/TW)
 
                     y = int(pos[1]/TH)
+                    PLACESOUND.play()
                     setTile(x, y,self.game.currentTile)
                     self.game.currentTile = random.choice(PLACEABLE_TILES)
                     # no check if we have some floors or greens there, and make the new block fitting to the others
@@ -404,7 +408,8 @@ class Application():
                         setTile(x, y, 'F')
                     if getTile(x, y - 1) == 'F':
                         setTile(x, y, 'F')
-
+                else:
+                    DENYSOUND.play()
 
             if e.type == pygame.MOUSEBUTTONUP:
                 self.game.mousepressed = False

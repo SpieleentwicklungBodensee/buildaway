@@ -5,7 +5,7 @@ class GeneratorData(object):
         self.level = level
         self.width = width
         self.height = height
-        self.seed = 29153 #473284
+        self.seed = 29153 + level * 3 - 3 #473284
         self.grid = [[' ' for x in range(width)] for y in range(height)]
 
 class Generator(object):

@@ -13,6 +13,7 @@ TH = 16
 MAX_GRAVITY = 2
 
 TILECOOLDOWN=150
+CURRENTCOOLDOWN=150
 
 level_gen = Generator()
 
@@ -185,6 +186,8 @@ class Game():
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
         
     def drawHalfTile(self,screen,tile,x,y):
+        if CURRENTCOOLDOWN < TILECOOLDOWN:
+            tile.set_alpha(70)
         screen.blit(tile, (x * TW - self.scrollx + 4,y*TH + TH/2))
 
     def drawSprite(self, screen, tile, x, y):
@@ -259,7 +262,8 @@ class Application():
     def controls(self):
         while True:
             e = pygame.event.poll()
-            self.cooldown += 1
+            global CURRENTCOOLDOWN
+            CURRENTCOOLDOWN += 1
             
             if not e:
                 break
@@ -290,8 +294,8 @@ class Application():
             if e.type == pygame.MOUSEBUTTONDOWN:
                 self.game.mousepressed = True
                 pos = pygame.mouse.get_pos()
-                if self.cooldown > TILECOOLDOWN:
-                    self.cooldown = 0
+                if CURRENTCOOLDOWN > TILECOOLDOWN:
+                    CURRENTCOOLDOWN = 0
 
                     x = int(pos[0]/TW + self.game.scrollx/TW)
 

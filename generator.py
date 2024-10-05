@@ -5,7 +5,7 @@ class GeneratorData(object):
         self.level = level
         self.width = width
         self.height = height
-        self.seed = 473284
+        self.seed = 29153 #473284
         self.grid = [[' ' for x in range(width)] for y in range(height)]
 
 class Generator(object):
@@ -38,6 +38,8 @@ class Generator(object):
         self.make_it_green(data)
 
         self.make_rocks(data)
+
+        self.make_walls(data)
 
         self.make_player(data)
 
@@ -104,13 +106,12 @@ class Generator(object):
             data.grid[-1][x] = '~'
 
     def make_rocks(self, data,):
-        for x in range(data.width):
-            
+        for x in range(data.width): 
             for y in range(data.height):
-
                 xdim = x / 80
                 ydim = y
                 val = self.noise([xdim, ydim, (data.level + data.seed)/10+38291]) * 20
+
                 if val > 1:
                     cur = data.grid[y][x]
                     above = self.get_block(data, x, y - 1)
@@ -118,8 +119,27 @@ class Generator(object):
 
                     if cur == 'G' and above == ' ' and below == ' ':
                         self.change_block(data, x, y, 'O')
+                        if val > 2:
+                            self.change_block(data, x, y, '1')
+                        if val > 3:
+                            self.change_block(data, x, y, '2')
+                        if val > 4:
+                            self.change_block(data, x, y, '2')
 
-               
+    def make_walls(self, data,):
+        for x in range(data.width):
+            for y in range(data.height):
+                xdim = x / 180
+                ydim = y
+                val = self.noise([xdim, ydim, (data.level + data.seed)/10+1204]) * 20
+
+                if val > 1:
+                    cur = data.grid[y][x]
+                    #above = self.get_block(data, x, y - 1)
+                    #below = self.get_block(data, x, y + 1)
+
+                    if cur == 'F': # and above == ' ' and below == ' ':
+                        self.change_block(data, x, y, '#')
 
     def make_it_green(self, data,):
         for x in range(data.width):

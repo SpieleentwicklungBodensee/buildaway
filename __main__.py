@@ -178,7 +178,7 @@ class Application():
             
             if e.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-                self.game.setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'F')
+                self.game.setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'G')
   
             
             elif e.type == pygame.KEYUP:

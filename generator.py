@@ -17,14 +17,14 @@ class Generator(object):
     def run(self, level, width, height):
         if level == -1:
             return  ['          P                                                             ',
-                 '                                                                        ',
+                 '        D                                                               ',
                  '                                                          ##            ',
-                 'GGGGGGGGGGGG                                                            ',
+                 'GGGGGGGGGGGG                                                         D  ',
                  'FFFF                      GG                                            ',
-                 'FFFF                      FF                  ###                     GG',
-                 'FFFF                     GFFG                                         FF',
-                 'FFFFG                    FFFF         ####                            FF',
-                 'FFFFF         GG         FFFFG                                        FF',
+                 'FFFF                      FF                  ###                    GGG',
+                 'FFFF                     GFFG                                        FFF',
+                 'FFFFG                    FFFF         ####                           FFF',
+                 'FFFFF         GG         FFFFG                                       FFF',
                  'FFFFF      GGGFFG        FFFFF                                      GGFF',
                  'FFFFF~~~~~~FFFFFF~~~~~~~~FFFFF~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FFFF',
                  ]
@@ -106,7 +106,7 @@ class Generator(object):
             data.grid[-1][x] = '~'
 
     def make_rocks(self, data,):
-        for x in range(data.width): 
+        for x in range(data.width):
             for y in range(data.height):
                 xdim = x / 80
                 ydim = y

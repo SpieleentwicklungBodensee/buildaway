@@ -40,6 +40,7 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          '~~~': pygame.image.load('gfx/water_03.png'),
          '~~~~': pygame.image.load('gfx/water_04.png'),
          'O': pygame.image.load('gfx/rock.png'),
+         'D': pygame.image.load('gfx/door.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
          'P1': pygame.image.load('gfx/player_walk_01.png'),

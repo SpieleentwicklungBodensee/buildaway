@@ -39,6 +39,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'P5': pygame.image.load('gfx/player_walk_05.png'),
 
          'cursor': pygame.image.load('gfx/cursor.png'),
+         'P6': pygame.image.load('gfx/player_jump_01.png'),
+         'P7': pygame.image.load('gfx/player_jump_02.png'),
          }
 
 level = level_gen.run(1, 200, 11);
@@ -47,8 +49,13 @@ level = level_gen.run(1, 200, 11);
 def getTile(x, y):
     if x >= len(level[0]):
         return '#'          # outside (to the right) of level area is always 'solid'
+    if x < 0:
+        return '#'          # outside (to the left) of level area is always 'solid'
+    
     if y >= len(level):
         return ' '          # outside (below) of level area is always 'empty'
+    if y < 0:
+        return ' '          # outside (above) of level area is always 'empty'
 
     return level[y][x]
 
@@ -82,21 +89,25 @@ class Player():
         self.dead = False
 
     def getSprite(self):
-        if self.xdir == 0:
-            return TILES['Pi']
-        else:
-            if int(time.time() * 1000) % 500 < 100:
-                return TILES['P1']
-            if 100 <= int(time.time() * 1000) % 500 < 200:
-                return TILES['P2']
-            if 200 <= int(time.time() * 1000) % 500 < 300:
-                return TILES['P3']
-            if 300 <= int(time.time() * 1000) % 500 < 400:
-                return TILES['P4']
-            if 400 <= int(time.time() * 1000) % 500 < 500:
-                return TILES['P5']
+        if self.ydir == 0:
+            if self.xdir == 0:
+                return TILES['Pi']
             else:
-                return TILES['P1']
+                if int(time.time() * 1000) % 500 < 100:
+                    return TILES['P1']
+                if 100 <= int(time.time() * 1000) % 500 < 200:
+                    return TILES['P2']
+                if 200 <= int(time.time() * 1000) % 500 < 300:
+                    return TILES['P3']
+                if 300 <= int(time.time() * 1000) % 500 < 400:
+                    return TILES['P4']
+                if 400 <= int(time.time() * 1000) % 500 < 500:
+                    return TILES['P5']
+                else:
+                    return TILES['P1']
+        else:
+            return TILES['P6']
+
 
     def jump(self, state):
         self.shouldJump = state
@@ -116,7 +127,7 @@ class Player():
         else:
             overground = False
 
-        debugPrint('overground: %s' % overground)
+        #debugPrint('overground: %s' % overground)
 
         self.ydir += 0.125
         self.onGround = False
@@ -137,7 +148,7 @@ class Player():
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
 
-        debugPrint('onground: %s' % self.onGround)
+        #debugPrint('onground: %s' % self.onGround)
 
         # horizontal collision (to the right)
         if self.xdir > 0:
@@ -199,7 +210,7 @@ class Game():
         # draw sky
         screen.fill((64,128,192))
 
-        font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
+        #font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
 
         # draw level
         for y in range(len(level)):
@@ -273,8 +284,20 @@ class Application():
                 if self.cooldown > TILECOOLDOWN:
                     setTile(int(pos[0]/TW + self.game.scrollx/TW) ,int(pos[1]/TH),'G')
                     self.cooldown = 0
-                else:
-                    print("X")
+
+
+                    x = int(pos[0]/TW + self.game.scrollx/TW)
+
+                    y = int(pos[1]/TH)
+                    setTile(x, y,'G')
+                    # no check if we have some floors or greens there, and make the new block fitting to the others
+                    if getTile(x, y + 1) == 'G':
+                        setTile(x, y + 1,'F')
+                    if getTile(x, y - 1) == 'G':
+                        setTile(x, y, 'F')
+                    if getTile(x, y - 1) == 'F':
+                        setTile(x, y, 'F')                                   
+
 
 
             elif e.type == pygame.KEYUP:

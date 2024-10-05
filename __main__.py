@@ -13,6 +13,7 @@ TH = 16
 MAX_GRAVITY = 2
 
 TILECOOLDOWN=150
+CURRENTCOOLDOWN=150
 
 level_gen = Generator()
 
@@ -39,6 +40,7 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'P5': pygame.image.load('gfx/player_walk_05.png'),
 
          'cursor': pygame.image.load('gfx/cursor.png'),
+         'cursor_pressed': pygame.image.load('gfx/cursor_03.png'),
          'P6': pygame.image.load('gfx/player_jump_01.png'),
          'P7': pygame.image.load('gfx/player_jump_02.png'),
          }
@@ -173,6 +175,7 @@ class Player():
 class Game():
     def __init__(self):
         self.scrollx = 0
+        self.mousepressed = False
 
         # find player start position
         for y in range(len(level)):
@@ -188,6 +191,11 @@ class Game():
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
+        
+    def drawHalfTile(self,screen,tile,x,y):
+        if CURRENTCOOLDOWN < TILECOOLDOWN:
+            tile.set_alpha(70)
+        screen.blit(tile, (x * TW - self.scrollx + 4,y*TH + TH/2))
 
     def drawSprite(self, screen, tile, x, y):
         screen.blit(tile, (x - self.scrollx, y + 4))
@@ -219,8 +227,14 @@ class Game():
 
         # draw mouse cursor
         pos = pygame.mouse.get_pos()
-        self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
-
+        if self.mousepressed:
+            self.drawTile(screen, TILES['cursor_pressed'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
+        else:
+            self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
+        
+        # draw incoming block
+        incomingBlock = pygame.transform.scale(TILES['G'],(TW/2,TH/2))
+        self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
     def update(self):
         # update level scroll
         if self.scrollx < len(level[0]) * TW - SCR_W:
@@ -261,7 +275,9 @@ class Application():
     def controls(self):
         while True:
             e = pygame.event.poll()
-            self.cooldown += 1
+            global CURRENTCOOLDOWN
+            CURRENTCOOLDOWN += 1
+            
             if not e:
                 break
 
@@ -289,9 +305,10 @@ class Application():
                     self.game.playerJump(True)
 
             if e.type == pygame.MOUSEBUTTONDOWN:
+                self.game.mousepressed = True
                 pos = pygame.mouse.get_pos()
-                if self.cooldown > TILECOOLDOWN:
-                    self.cooldown = 0
+                if CURRENTCOOLDOWN > TILECOOLDOWN:
+                    CURRENTCOOLDOWN = 0
 
                     x = int(pos[0]/TW + self.game.scrollx/TW)
 
@@ -305,6 +322,9 @@ class Application():
                     if getTile(x, y - 1) == 'F':
                         setTile(x, y, 'F')
 
+
+            if e.type == pygame.MOUSEBUTTONUP:
+                self.game.mousepressed = False
 
 
             elif e.type == pygame.KEYUP:

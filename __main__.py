@@ -52,11 +52,11 @@ def setTile(x, y, tile):
 
 SCROLL_SPEED = 0.5
 
-DEBUG_STRING = ''
+DEBUG_STRINGS = []
 
 def debugPrint(stuff):
-    global DEBUG_STRING
-    DEBUG_STRING = str(stuff).upper()
+    global DEBUG_STRINGS
+    DEBUG_STRINGS.append(str(stuff).upper())
 
 
 class Player():
@@ -88,7 +88,7 @@ class Player():
         else:
             overground = False
 
-        debugPrint(overground)
+        debugPrint('overground: %s' % overground)
 
         self.ydir += 0.125
         self.onGround = False
@@ -104,10 +104,12 @@ class Player():
         tilex = int(self.xpos / TW)
         tiley = int((self.ypos + TH-1) / TH)
         if getTile(tilex, tiley) not in [' ', '~']:
-            if overground and self.ydir > 0:
+            if overground:
                 self.ydir = 0
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
+
+        debugPrint('onground: %s' % self.onGround)
 
 class Game():
     def __init__(self):
@@ -148,8 +150,6 @@ class Game():
     def render(self, screen, font):
         # draw sky
         screen.fill((64,128,192))
-
-        font.centerText(screen, 'BUILD-A-WAY!', y=2)
 
         # draw level
         for y in range(len(level)):
@@ -227,7 +227,10 @@ class Application():
         while self.running:
             self.game.render(self.screen, self.font)
 
-            self.font.drawText(self.screen, DEBUG_STRING, 0, 0)
+            self.font.locate(0, 0)
+            for string in DEBUG_STRINGS:
+                self.font.drawText(self.screen, string)
+            DEBUG_STRINGS.clear()
 
             pygame.display.flip()
 

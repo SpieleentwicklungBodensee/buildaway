@@ -18,7 +18,7 @@ COYOTE_JUMP_TOLERANCE = 4
 TILECOOLDOWN=150
 CURRENTCOOLDOWN=150
 
-SCROLL_SPEED = 0.5
+SCROLL_SPEED = 5.5
 
 DISSOLVE_SPEED = 6
 
@@ -70,7 +70,7 @@ OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cann
 PLACEABLE_TILES = ['1', 'O']                  # placeable = mouse player will place those
 
 
-level = level_gen.run(-1, 60, 11);
+level = level_gen.run(1, 60, 11);
 
 
 def getTile(x, y):
@@ -269,6 +269,13 @@ class Game():
                     # remove the 'P' from level data
                     setTile(x, y, ' ')
 
+        # find door position
+        for y in range(len(level)):
+            for x in range(len(level[0])):
+                if level[y][x] == 'D':
+                    self.door = (x * TW, y * TH) # TODO if no door is found
+            
+
         self.leftPressed = False
         self.rightPressed = False
         self.currentTile = PLACEABLE_TILES[0]
@@ -389,7 +396,7 @@ class Game():
             return
 
         # update level scroll
-        if self.scrollx < len(level[0]) * TW - SCR_W:
+        if self.scrollx < min(len(level[0]) * TW - SCR_W, self.door[0]- SCR_W/2):
             self.scrollx += SCROLL_SPEED
 
         # update player

@@ -45,6 +45,8 @@ class Generator(object):
 
         self.make_door(data)
 
+        self.make_traps(data)
+
         # make each line as string
         for y in range(data.height):
             data.grid[y] = ''.join(data.grid[y])
@@ -143,6 +145,23 @@ class Generator(object):
                     if cur == 'F': # and above == ' ' and below == ' ':
                         self.change_block(data, x, y, '#')
 
+    def make_traps(self, data,):
+        for x in range(data.width):
+            last = ' '
+            for y in range(data.height):
+                xdim = x / 20
+                ydim = y
+                val = self.noise([xdim, ydim, (data.level + data.seed)/10+15590]) * 20
+                cur = data.grid[y][x]
+                door1 = self.get_block(data, x-1, y-2)
+                door2 = self.get_block(data, x, y-2)
+                
+                if val > 3:
+                    if cur == 'G' and last == ' ' and door1 != 'D' and door2 != 'D':
+                        self.change_block(data, x, y, 'v')
+
+                last = cur
+
     def make_it_green(self, data,):
         for x in range(data.width):
             last = ' '
@@ -177,7 +196,7 @@ class Generator(object):
             if x < data.width - 4:
                 last = ''
                 for y in range(data.height):
-                    if y > 2:
+                    if y > 1:
                         cur = data.grid[y][x]
 
                         if cur == 'G' and last == ' ':

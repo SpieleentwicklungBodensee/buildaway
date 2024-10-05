@@ -15,10 +15,11 @@ TH = 16
 MAX_GRAVITY = 2
 COYOTE_JUMP_TOLERANCE = 4
 
-TILECOOLDOWN=150
+TILECOOLDOWN=100
 CURRENTCOOLDOWN=150
 
 SCROLL_SPEED = 0.5
+PLAYER_SPEED = 1.25
 
 DISSOLVE_SPEED = 6
 
@@ -219,7 +220,7 @@ class Player():
                 self.ydir = 0
 
         # update x position
-        self.xpos += self.xdir
+        self.xpos += self.xdir * PLAYER_SPEED
 
         # horizontal collision (to the right)
         if self.xdir > 0:
@@ -274,7 +275,7 @@ class Game():
             for x in range(len(level[0])):
                 if level[y][x] == 'D':
                     self.door = (x * TW, y * TH) # TODO if no door is found
-            
+
 
         self.leftPressed = False
         self.rightPressed = False

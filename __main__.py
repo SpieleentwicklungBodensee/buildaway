@@ -28,8 +28,9 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          '~': pygame.image.load('gfx/water.png'),
          'O': pygame.image.load('gfx/rock.png'),
 
-         'P': pygame.image.load('gfx/player_01.png'),
-         'p': pygame.image.load('gfx/player_02.png'),
+         'Pi': pygame.image.load('gfx/player_idle.png'),
+         'P': pygame.image.load('gfx/player_walk_01.png'),
+         'p': pygame.image.load('gfx/player_walk_05.png'),
          }
 
 level = level_gen.run(-1, 200, 11);
@@ -71,10 +72,13 @@ class Player():
         self.shouldJump = False
 
     def getSprite(self):
-        if int(time.time() * 1000) % 400 < 200:
-            return TILES['P']
+        if self.xdir == 0:
+            return TILES['Pi']
         else:
-            return TILES['p']
+            if int(time.time() * 1000) % 400 < 200:
+                return TILES['P']
+            else:
+                return TILES['p']
 
     def jump(self):
         self.shouldJump = True

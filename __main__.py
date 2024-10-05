@@ -29,8 +29,11 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'O': pygame.image.load('gfx/rock.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
-         'P': pygame.image.load('gfx/player_walk_01.png'),
-         'p': pygame.image.load('gfx/player_walk_05.png'),
+         'P1': pygame.image.load('gfx/player_walk_01.png'),
+         'P2': pygame.image.load('gfx/player_walk_02.png'),
+         'P3': pygame.image.load('gfx/player_walk_03.png'),
+         'P4': pygame.image.load('gfx/player_walk_04.png'),
+         'P5': pygame.image.load('gfx/player_walk_05.png'),
          }
 
 level = level_gen.run(-1, 200, 11);
@@ -75,10 +78,18 @@ class Player():
         if self.xdir == 0:
             return TILES['Pi']
         else:
-            if int(time.time() * 1000) % 400 < 200:
-                return TILES['P']
+            if int(time.time() * 1000) % 500 < 100:
+                return TILES['P1']
+            if 100 <= int(time.time() * 1000) % 500 < 200:
+                return TILES['P2']
+            if 200 <= int(time.time() * 1000) % 500 < 300:
+                return TILES['P3']
+            if 300 <= int(time.time() * 1000) % 500 < 400:
+                return TILES['P4']
+            if 400 <= int(time.time() * 1000) % 500 < 500:
+                return TILES['P5']
             else:
-                return TILES['p']
+                return TILES['P1']
 
     def jump(self):
         self.shouldJump = True

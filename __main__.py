@@ -68,6 +68,7 @@ class Player():
         self.ydir = 0
 
         self.onGround = False
+        self.shouldJump = False
 
     def getSprite(self):
         if int(time.time() * 1000) % 400 < 200:
@@ -76,13 +77,17 @@ class Player():
             return TILES['p']
 
     def jump(self):
-        if self.onGround:
-            self.ydir = -3
+        self.shouldJump = True
 
     def update(self):
+        if self.shouldJump:
+            if self.onGround:
+                self.ydir = -3
+
         # gravity part 1
-        tilex = int(self.xpos / TW)
-        tiley = int((self.ypos + TH-1) / TH)
+        tilex = int(self.xpos / TW + 0.5)
+        tiley = int((self.ypos + TH * 0.9999) / TH)
+        oldy = tiley
         if getTile(tilex, tiley) == ' ':
             overground = True
         else:
@@ -92,6 +97,7 @@ class Player():
 
         self.ydir += 0.125
         self.onGround = False
+        self.shouldJump = False
 
         if self.ydir > MAX_GRAVITY:
             self.ydir = MAX_GRAVITY
@@ -101,14 +107,13 @@ class Player():
         self.ypos += self.ydir
 
         # gravity part 2
-        tilex = int(self.xpos / TW)
-        tiley = int((self.ypos + TH-1) / TH)
+        tilex = int(self.xpos / TW + 0.5)
+        tiley = int((self.ypos + TH * 0.9999) / TH)
         if getTile(tilex, tiley) not in [' ', '~']:
-            if overground:
+            if overground and tiley > oldy:
                 self.ydir = 0
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
-
 
         debugPrint('onground: %s' % self.onGround)
 

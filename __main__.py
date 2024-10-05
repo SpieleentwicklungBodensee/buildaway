@@ -165,7 +165,7 @@ class Player():
         # horizontal collision (to the right)
         if self.xdir > 0:
             tilex = int(self.xpos / TW + 0.7)
-            tiley = int(self.ypos / TH)
+            tiley = int(self.ypos / TH + 0.5)
             if getTile(tilex, tiley) in OBSTACLES:
                 self.xpos = int(self.xpos / TW) * TW + TW * 0.3
                 self.xdir = 0
@@ -173,7 +173,7 @@ class Player():
         # horizontal collision (to the left)
         if self.xdir < 0:
             tilex = int(self.xpos / TW + 0.3)
-            tiley = int(self.ypos / TH)
+            tiley = int(self.ypos / TH + 0.5)
             if getTile(tilex, tiley) in OBSTACLES:
                 self.xpos = int(self.xpos / TW) * TW + TW * 0.7
                 self.xdir = 0

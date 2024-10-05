@@ -153,8 +153,11 @@ class Generator(object):
                 ydim = y
                 val = self.noise([xdim, ydim, (data.level + data.seed)/10+15590]) * 20
                 cur = data.grid[y][x]
+                door1 = self.get_block(data, x-1, y-2)
+                door2 = self.get_block(data, x, y-2)
+                
                 if val > 3:
-                    if cur == 'G' and last == ' ':
+                    if cur == 'G' and last == ' ' and door1 != 'D' and door2 != 'D':
                         self.change_block(data, x, y, 'v')
 
                 last = cur

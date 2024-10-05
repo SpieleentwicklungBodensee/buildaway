@@ -69,7 +69,7 @@ OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cann
 PLACEABLE_TILES = ['1', 'O']                  # placeable = mouse player will place those
 
 
-level = level_gen.run(1, 60, 11);
+level = level_gen.run(-1, 60, 11);
 
 
 def getTile(x, y):

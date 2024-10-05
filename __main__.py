@@ -261,6 +261,8 @@ class Game():
         self.scrollx = 0
         self.mousepressed = False
 
+        self.currentMousePos = (-1,-1)
+
         # find player start position
         for y in range(len(level)):
             for x in range(len(level[0])):
@@ -308,10 +310,8 @@ class Game():
         global CURRENTCOOLDOWN
         self.mousepressed = state
 
-        pos = pygame.mouse.get_pos()
-
-        x = int(pos[0]/TW + self.scrollx/TW)
-        y = int(pos[1]/TH)
+        x = self.currentMouseTileX
+        y = self.currentMouseTileY
 
         if getTile(x, y) == ' ':
             # make sure end gate is not overdrawn
@@ -368,19 +368,26 @@ class Game():
 
         # draw mouse cursor
         pos = pygame.mouse.get_pos()
+
+        if pos != self.currentMousePos:
+            self.currentMousePos = pos
+            self.currentMouseTileX = int(pos[0] / TW + self.scrollx / TW)
+            self.currentMouseTileY = int(pos[1] / TH)
+
         if self.mousepressed:
-            self.drawTile(screen, TILES['cursor_pressed'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
+            self.drawTile(screen, TILES['cursor_pressed'], self.currentMouseTileX, self.currentMouseTileY)
         else:
-            self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
+            self.drawTile(screen, TILES['cursor'], self.currentMouseTileX, self.currentMouseTileY)
         if CURRENTCOOLDOWN < TILECOOLDOWN:
             cooldownbar = (TILECOOLDOWN - CURRENTCOOLDOWN) / TILECOOLDOWN * TW
             pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255),
                                       (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0),
-                                      (int(pos[0]/TW + self.scrollx/TW) * TW - self.scrollx,  int(pos[1]/TH + 1) * TH + 4, cooldownbar, 2) )
+                                      (self.currentMouseTileX * TW - self.scrollx,
+                                       (self.currentMouseTileY + 1) * TH + 4, cooldownbar, 2) )
 
         # draw incoming block
         incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))
-        self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
+        self.drawHalfTile(screen, incomingBlock, self.currentMouseTileX, self.currentMouseTileY)
 
         # draw congratz message
         if self.levelFinished:

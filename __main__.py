@@ -32,6 +32,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'G': pygame.image.load('gfx/floor_g.png'),
          '~': pygame.image.load('gfx/water.png'),
          '~~': pygame.image.load('gfx/water_02.png'),
+         '~~~': pygame.image.load('gfx/water_03.png'),
+         '~~~~': pygame.image.load('gfx/water_04.png'),
          'O': pygame.image.load('gfx/rock.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
@@ -261,7 +263,8 @@ class Game():
     def playerJump(self, state):
         self.player.jump(state)
 
-    def render(self, screen, font, app):
+    def render(self, screen, font):
+        global CURRENTCOOLDOWN
         # draw sky
         screen.fill((64,128,192))
 
@@ -273,10 +276,16 @@ class Game():
                 tile = level[y][x]
                 if tile in TILES:
                     if tile == '~':
-                        if int(time.time() * 1000) % 500 < 200:
+                        if int(time.time() * 1000) % 400 < 100:
                             tile = '~'
-                        else:
+                        if 100 <= int(time.time() * 1000) % 400 < 200:
                             tile = '~~'
+                        if 200 <= int(time.time() * 1000) % 400 < 300:
+                            tile = '~~~'
+                        if 300 <= int(time.time() * 1000) % 400 < 400:
+                            tile = '~~~~'
+                        #else:
+                        #    tile = '~~'
                     self.drawTile(screen, TILES[tile], x, y)
 
         # draw player
@@ -288,11 +297,11 @@ class Game():
             self.drawTile(screen, TILES['cursor_pressed'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
         else:
             self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
-        if app.cooldown < TILECOOLDOWN:
-            cooldownbar = (TILECOOLDOWN - app.cooldown) / TILECOOLDOWN * TW
-            pygame.draw.rect(screen,
-                             (255 - (app.cooldown / TILECOOLDOWN * 255), (app.cooldown / TILECOOLDOWN * 255) , 0),
-                             (int(pos[0]/TW + self.scrollx/TW) * TW - self.scrollx,  int(pos[1]/TH + 1) * TH + 4, cooldownbar, 2) )
+        if CURRENTCOOLDOWN < TILECOOLDOWN:
+            cooldownbar = (TILECOOLDOWN - CURRENTCOOLDOWN) / TILECOOLDOWN * TW
+            pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255),
+                                      (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0),
+                                      (int(pos[0]/TW + self.scrollx/TW) * TW - self.scrollx,  int(pos[1]/TH + 1) * TH + 4, cooldownbar, 2) )
 
         # draw incoming block
         incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))

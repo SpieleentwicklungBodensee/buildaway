@@ -180,13 +180,8 @@ class Generator(object):
                     cur = data.grid[y][x]
 
                     if cur == 'G' and last == ' ':
-                        d1 = data.grid[y-1][x]
-                        d2 = data.grid[y-1][x]
-                        d3 = data.grid[y-2][x-1]
-                        d4 = data.grid[y-2][x-1]
                         f1 = data.grid[y][x-1]
-                        has_free_space = d1 == ' ' and d2 == ' ' and d3 == ' ' and d4 == ' ' and f1 == 'G'
-                        if has_free_space and self.is_free_to_top(data, x,y-1) and self.is_free_to_top(data, x-1, y-1):
+                        if f1 == 'G' and self.is_free_to_top(data, x, y-1) and self.is_free_to_top(data, x-1, y-1):
                             self.change_block(data, x-1, y-2, 'D')
                             return
                     last = cur

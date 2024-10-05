@@ -177,11 +177,12 @@ class Generator(object):
             if x < data.width - 4:
                 last = ''
                 for y in range(data.height):
-                    cur = data.grid[y][x]
+                    if y > 2:
+                        cur = data.grid[y][x]
 
-                    if cur == 'G' and last == ' ':
-                        f1 = data.grid[y][x-1]
-                        if f1 == 'G' and self.is_free_to_top(data, x, y-1) and self.is_free_to_top(data, x-1, y-1):
-                            self.change_block(data, x-1, y-2, 'D')
-                            return
-                    last = cur
+                        if cur == 'G' and last == ' ':
+                            f1 = data.grid[y][x-1]
+                            if f1 == 'G' and self.is_free_to_top(data, x, y-1) and self.is_free_to_top(data, x-1, y-1):
+                                self.change_block(data, x-1, y-2, 'D')
+                                return
+                        last = cur

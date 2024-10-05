@@ -5,7 +5,7 @@ class GeneratorData(object):
         self.level = level + 473284
         self.width = width
         self.height = height
-        self.grid = [[' ' for x in range(width)] for y in range(height)] 
+        self.grid = [[' ' for x in range(width)] for y in range(height)]
 
 class Generator(object):
     def __init__(self):
@@ -43,7 +43,7 @@ class Generator(object):
             data.grid[y] = ''.join(data.grid[y])
 
         return data.grid
-                   
+
     def change_block(self, data, x, y, element):
         try:
             data.grid[y][x] = element
@@ -51,16 +51,16 @@ class Generator(object):
             pass
 
     def make_floors(self, data):
-        ratio =   (data.width / data.height) 
+        ratio =   (data.width / data.height)
 
         # lower generation
-        threshold = 3
+        threshold = 4
         for y in range(data.height):
             for x in range(data.width):
-                xdim = x / 80 
-                ydim = y 
+                xdim = x / 80
+                ydim = y
                 cur = self.noise([xdim, ydim, data.level/10]) * 20
-                if cur > threshold: 
+                if cur > threshold:
                     #print (cur)
                     #if data[y][x] != '~':
                     self.change_block(data, x, y+5, 'F')
@@ -72,7 +72,7 @@ class Generator(object):
                 if data.grid[y][x] in ['F', 'G']:
                     lowest = y
                     break
-            
+
             if lowest > -1:
                 for y in range(lowest, data.height):
                     self.change_block(data, x, y, 'F')
@@ -84,7 +84,7 @@ class Generator(object):
                 xdim = x / 80  + 20
                 ydim = y / 10
                 cur = self.noise([xdim, ydim, data.level/10+1234]) * 20
-                if cur > threshold and y < 7: 
+                if cur > threshold and y < 7:
                     #print (cur)
                     #if data[y][x] != '~':
                     self.change_block(data, x, y, 'F')
@@ -101,7 +101,7 @@ class Generator(object):
 
                 if cur == 'F' and last == ' ':
                     self.change_block(data, x, y, 'G')
-                
+
                 last = cur
 
     def make_player(self, data,):
@@ -115,4 +115,3 @@ class Generator(object):
                         self.change_block(data, x, y-1, 'P')
                         return
                     last = cur
-                   

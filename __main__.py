@@ -73,6 +73,7 @@ def setTile(x, y, tile):
 
 
 SCROLL_SPEED = 0.5
+COYOTE_JUMP_TOLERANCE = 4
 
 DEBUG_STRINGS = []
 
@@ -91,6 +92,7 @@ class Player():
 
         self.onGround = False
         self.shouldJump = False
+        self.coyoteCount = 0
 
         self.dead = False
 
@@ -120,7 +122,7 @@ class Player():
 
     def update(self):
         if self.shouldJump:
-            if self.onGround:
+            if self.onGround or self.coyoteCount < COYOTE_JUMP_TOLERANCE:
                 self.ydir = -3
                 self.shouldJump = False
 
@@ -147,6 +149,7 @@ class Player():
                 self.ydir = 0
                 self.ypos = int(self.ypos / TH) * TH
                 self.onGround = True
+                self.coyoteCount = 0
 
         debugPrint('onground: %s' % self.onGround)
 
@@ -167,7 +170,7 @@ class Player():
             tilex = int(self.xpos / TW + 0.7)
             tiley = int(self.ypos / TH + 0.5)
             if getTile(tilex, tiley) in OBSTACLES:
-                self.xpos = int(self.xpos / TW) * TW + TW * 0.3
+                self.xpos = int(self.xpos / TW) * TW + TW * 0.29
                 self.xdir = 0
 
         # horizontal collision (to the left)
@@ -175,12 +178,16 @@ class Player():
             tilex = int(self.xpos / TW + 0.3)
             tiley = int(self.ypos / TH + 0.5)
             if getTile(tilex, tiley) in OBSTACLES:
-                self.xpos = int(self.xpos / TW) * TW + TW * 0.7
+                self.xpos = int(self.xpos / TW) * TW + TW * 0.71
                 self.xdir = 0
 
         # fall into water
         if self.ypos > len(level) * TH + 50:
             self.dead = True
+
+        # coyote jump counter
+        if not self.onGround:
+            self.coyoteCount += 1
 
 class Game():
     def __init__(self):
@@ -248,10 +255,10 @@ class Game():
             self.drawTile(screen, TILES['cursor'], int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))
         if app.cooldown < TILECOOLDOWN:
             cooldownbar = (TILECOOLDOWN - app.cooldown) / TILECOOLDOWN * TW
-            pygame.draw.rect(screen, 
-                             (255 - (app.cooldown / TILECOOLDOWN * 255), (app.cooldown / TILECOOLDOWN * 255) , 0), 
+            pygame.draw.rect(screen,
+                             (255 - (app.cooldown / TILECOOLDOWN * 255), (app.cooldown / TILECOOLDOWN * 255) , 0),
                              (int(pos[0]/TW + self.scrollx/TW) * TW - self.scrollx,  int(pos[1]/TH + 1) * TH + 4, cooldownbar, 2) )
-        
+
         # draw incoming block
         incomingBlock = pygame.transform.scale(TILES['G'],(TW/2,TH/2))
         self.drawHalfTile(screen, incomingBlock, int(pos[0]/TW + self.scrollx/TW), int(pos[1]/TH))

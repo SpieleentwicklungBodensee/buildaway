@@ -10,6 +10,8 @@ SCR_H = 180
 TW = 16
 TH = 16
 
+MAX_GRAVITY = 2
+
 level_gen = Generator()
 
 pygame.init()
@@ -35,11 +37,48 @@ class Player():
         self.xpos = x
         self.ypos = y
 
+        self.xdir = 0
+        self.ydir = 0
+
+        self.onGround = False
+
     def getSprite(self):
         if int(time.time() * 1000) % 400 < 200:
             return TILES['P']
         else:
             return TILES['p']
+
+    def jump(self):
+        if self.onGround:
+            self.ydir = -3
+
+    def update(self):
+        # gravity part 1
+        tilex = int(self.xpos / TW)
+        tiley = int(self.ypos / TH)
+        if level[tiley][tilex] == ' ':
+            overground = True
+        else:
+            overground = False
+
+        self.ydir += 0.125
+        self.onGround = False
+
+        if self.ydir > MAX_GRAVITY:
+            self.ydir = MAX_GRAVITY
+
+        # update position
+        self.xpos += self.xdir
+        self.ypos += self.ydir
+
+        # gravity part 2
+        tilex = int(self.xpos / TW)
+        tiley = int(self.ypos / TH) +1
+        if level[tiley][tilex] not in [' ', '~']:
+            if overground:
+                self.ydir = 0
+                self.ypos = int(self.ypos / TH) * TH
+                self.onGround = True
 
 class Game():
     def __init__(self):
@@ -63,11 +102,28 @@ class Game():
     def drawSprite(self, screen, tile, x, y):
         screen.blit(tile, (x - self.scrollx, y + 4))
 
+    def playerLeft(self, state):
+        if state:
+            self.player.xdir = -1
+        else:
+            if self.player.xdir < 0:
+                self.player.xdir = 0
+
+    def playerRight(self, state):
+        if state:
+            self.player.xdir = 1
+        else:
+            if self.player.xdir > 0:
+                self.player.xdir = 0
+
+    def playerJump(self):
+        self.player.jump()
+
     def render(self, screen, font):
         # draw sky
         screen.fill((64,128,192))
 
-        font.centerText(screen, 'ES SCROLLT...', y=5)
+        font.centerText(screen, 'BUILD-A-WAY!', y=2)
 
         # draw level
         for y in range(len(level)):
@@ -80,10 +136,10 @@ class Game():
         self.drawSprite(screen, self.player.getSprite(), self.player.xpos, self.player.ypos)
 
     def update(self):
-        if self.scrollx >= len(level[0]) * TW - SCR_W:
-            return
-        self.scrollx += 0.5
+        if self.scrollx < len(level[0]) * TW - SCR_W:
+            self.scrollx += 0.5
 
+        self.player.update()
 
 class Application():
     def __init__(self):
@@ -107,6 +163,22 @@ class Application():
 
                 elif e.key == pygame.K_F11:
                     pygame.display.toggle_fullscreen()
+
+                elif e.key == pygame.K_LEFT:
+                    self.game.playerLeft(True)
+
+                elif e.key == pygame.K_RIGHT:
+                    self.game.playerRight(True)
+
+                elif e.key == pygame.K_UP:
+                    self.game.playerJump()
+
+            elif e.type == pygame.KEYUP:
+                if e.key == pygame.K_LEFT:
+                    self.game.playerLeft(False)
+
+                elif e.key == pygame.K_RIGHT:
+                    self.game.playerRight(False)
 
             elif e.type == pygame.QUIT:
                 self.running = False

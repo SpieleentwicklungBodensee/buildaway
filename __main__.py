@@ -190,7 +190,7 @@ class Player():
             if tile2 == '1':
                 dissolveTile(tilex2, tiley, tick)
 
-        debugPrint('onground: %s' % self.onGround)
+        #debugPrint('onground: %s' % self.onGround)
 
         # upper collision (head)
         if self.ydir < 0:

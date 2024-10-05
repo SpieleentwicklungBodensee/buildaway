@@ -166,6 +166,11 @@ class Generator(object):
                         return
                     last = cur
 
+    def is_free_to_top(self, data, x, y):
+        for cury in range (y):
+            if data.grid[cury][x] != ' ':
+                return False
+        return True
 
     def make_door(self, data,):
         for x in reversed(range(data.width)):
@@ -180,8 +185,8 @@ class Generator(object):
                         d3 = data.grid[y-2][x-1]
                         d4 = data.grid[y-2][x-1]
                         f1 = data.grid[y][x-1]
-
-                        if d1 == ' ' and d2 == ' ' and d3 == ' ' and d4 == ' ' and f1 == 'G':
+                        has_free_space = d1 == ' ' and d2 == ' ' and d3 == ' ' and d4 == ' ' and f1 == 'G'
+                        if has_free_space and self.is_free_to_top(data, x,y-1) and self.is_free_to_top(data, x-1, y-1):
                             self.change_block(data, x-1, y-2, 'D')
                             return
                     last = cur

@@ -384,6 +384,12 @@ class Game():
                         #    tile = '~~'
                     self.drawTile(screen, TILES[tile], x, y)
 
+        for x in range (len(level[0])):
+            tile = level[len(level) - 1][x]
+            tileabove = level[len(level) - 2][x]
+            if tile == '~' and tileabove == 'l' :
+                self.drawTile(screen, TILES['l'], x, len(level) - 1)
+
         # draw player
         self.drawSprite(screen, self.player.getSprite(), self.player.xpos, self.player.ypos)
 

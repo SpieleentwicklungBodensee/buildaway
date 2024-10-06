@@ -7,6 +7,7 @@ class GeneratorData(object):
         self.height = height
         self.seed = 29153 + level * 3 - 3 #473284
         self.grid = [[' ' for x in range(width)] for y in range(height)]
+        self.doorx = 0
 
 class Generator(object):
     def __init__(self):
@@ -46,6 +47,8 @@ class Generator(object):
         self.make_door(data)
 
         self.make_traps(data)
+
+        self.make_laser(data)
 
         # make each line as string
         for y in range(data.height):
@@ -162,6 +165,29 @@ class Generator(object):
 
                 last = cur
 
+
+    def make_laser(self, data):
+        for x in range(data.width):
+
+            xdim = x / 20
+            ydim = 0
+            val = self.noise([xdim, ydim, (data.level + data.seed)/10+93356]) * 20
+            
+            cur = self.get_block(data, x, 0)
+
+            #if not self.has_element_on_column(data, x, 'P') and cur == ' ' and val > 1 and x > data.doorx + 2 and x < data.doorx - 2:
+            nodoor =  not ( (x >= data.doorx - 1) and (x <= data.doorx + 2) )
+            if cur == ' ' and not self.has_element_on_column(data, x, 'P') and nodoor and val > 5:
+                
+                self.change_block(data, x, 0, 'L')
+                for y in range(1, data.height):
+                    cury = self.get_block(data, x, y)
+                    if cury == ' ':
+                        self.change_block(data, x, y, 'l')
+                    else:
+                        break
+
+
     def make_it_green(self, data,):
         for x in range(data.width):
             last = ' '
@@ -190,6 +216,14 @@ class Generator(object):
             if data.grid[cury][x] != ' ':
                 return False
         return True
+    
+    def has_element_on_column(self, data, x, element):
+        for y in range(data.height):
+            cur = self.get_block(data, x, y)
+            if cur == element:
+                return True
+
+        return False
 
     def make_door(self, data,):
         for x in reversed(range(data.width)):
@@ -203,5 +237,6 @@ class Generator(object):
                             f1 = data.grid[y][x-1]
                             if f1 == 'G' and self.is_free_to_top(data, x, y-1) and self.is_free_to_top(data, x-1, y-1):
                                 self.change_block(data, x-1, y-2, 'D')
+                                data.doorx = x-1
                                 return
                         last = cur

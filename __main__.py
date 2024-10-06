@@ -123,7 +123,7 @@ def debugPrint(stuff):
 
 
 class Player():
-    def __init__(self, x, y):
+    def __init__(self, x, y,lifes):
         self.xpos = x
         self.ypos = y
 
@@ -135,6 +135,7 @@ class Player():
         self.coyoteCount = 0
 
         self.dead = False
+        self.lifes = lifes
 
     def getSprite(self):
         if self.onGround == True:  # self.ydir == 0:
@@ -265,6 +266,7 @@ class Game():
     def __init__(self):
         self.reset()
         self.levelno = 1
+        self.lifes = 3
 
     def reset(self):
         self.scrollx = 0
@@ -276,8 +278,7 @@ class Game():
         for y in range(len(level)):
             for x in range(len(level[0])):
                 if level[y][x] == 'P':
-                    self.player = Player(x * TW, y * TH)
-
+                    self.player = Player(x * TW, y * TH, self.lifes)
                     # remove the 'P' from level data
                     setTile(x, y, ' ')
 
@@ -296,6 +297,8 @@ class Game():
         self.levelFinishCount = 0
 
         self.respawnMode = False
+        self.gameover = False
+
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
@@ -341,7 +344,7 @@ class Game():
             DENYSOUND.play()
 
         if self.respawnMode:
-            self.player = Player(x * TW, (y - 1) * TH)
+            self.player = Player(x * TW, (y - 1) * TH, self.lifes)
             self.respawnMode = False
 
         # TODO this is probably deprecated
@@ -357,9 +360,10 @@ class Game():
         global CURRENTCOOLDOWN
         # draw sky
         screen.fill((64,128,192))
-
+        if self.gameover:
+            font.centerText(screen,'GAME OVER', y=10)            
         #font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
-
+        debugPrint(self.lifes)
         # draw level
         for y in range(len(level)):
             for x in range(len(level[0])):
@@ -408,11 +412,16 @@ class Game():
         if self.levelFinished:
             font.centerText(screen, 'LEVEL COMPLETE', y=10)
 
+
     def update(self, tick):
         global CURRENTCOOLDOWN
         CURRENTCOOLDOWN += 1
 
         if self.respawnMode:
+            return
+        
+        if self.lifes == 0:
+            self.gameover = True
             return
 
         if self.levelFinished:
@@ -440,7 +449,7 @@ class Game():
 
         self.player.update(tick, self.scrollx)
 
-        if self.player.dead:
+        if self.player.dead and not self.gameover:
             self.respawnMode = True
             self.currentTile = 'O'
 
@@ -458,7 +467,6 @@ class Game():
         level = level_gen.run(self.levelno, 60 + self.levelno * 5, 11);
 
         self.reset()
-
 
 class Application():
     def __init__(self):

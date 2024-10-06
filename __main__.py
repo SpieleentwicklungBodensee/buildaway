@@ -335,6 +335,12 @@ class Game():
 
             if CURRENTCOOLDOWN > TILECOOLDOWN or self.respawnMode:
                 CURRENTCOOLDOWN = 0
+
+                if self.respawnMode:
+                    if y == 0:
+                        DENYSOUND.play()
+                        return
+
                 setTile(x, y, self.currentTile)
 
                 if tile == 'l' and y < 11: # last tile was a laser beam
@@ -419,6 +425,11 @@ class Game():
         # draw congratz message
         if self.levelFinished:
             font.centerText(screen, 'LEVEL COMPLETE', y=10)
+
+        # draw respawn message
+        if self.respawnMode:
+            font.centerText(screen, 'YOU DIED', y=10)
+            font.centerText(screen, 'CLICK TO RESPAWN', y=12)
 
     def update(self, tick):
         global CURRENTCOOLDOWN

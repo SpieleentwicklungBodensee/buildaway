@@ -30,7 +30,7 @@ Ideen um das Gameplay zu verbessern:
 
 
 MUST HAVES:
-- 3 Leben, danach Game Over
-- nach Game Over Neustart des Spiels
-- Respawn nur in der linken Bildhaelfte / nicht auf oder unter vorhandenen Bloecken / nicht in der obersten Zeile / nicht im Wasser
-- "you died" message
+[ ] 3 Leben, danach Game Over
+[ ] nach Game Over Neustart des Spiels
+[X] Respawn nur in der linken Bildhaelfte / nicht auf oder unter vorhandenen Bloecken / nicht in der obersten Zeile / nicht im Wasser
+[X] "you died" message

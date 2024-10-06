@@ -365,7 +365,7 @@ class Game():
 
                 # respawn player if dead
                 if self.respawnMode:
-                    self.player = Player(x * TW, (y - 1) * TH)
+                    self.player = Player(x * TW, (y - 1) * TH,self.lifes)
                     self.respawnMode = False
 
                 PLACESOUND.play()

@@ -257,6 +257,12 @@ class Player():
         if getTile(tilex, tiley) == 'v':
             self.kill()
 
+        # collide with laser
+        tilex = int(self.xpos / TW + 0.3)
+        tiley = int(self.ypos / TH + 0.5)
+        if getTile(tilex, tiley) == 'l':
+            self.kill()
+
     def kill(self):
         self.dead = True
         DEATHSOUND.play()
@@ -337,7 +343,7 @@ class Game():
                 CURRENTCOOLDOWN = 0
 
                 if self.respawnMode:
-                    if y == 0:
+                    if y == 0 or tile == 'l':
                         DENYSOUND.play()
                         return
 
@@ -407,16 +413,23 @@ class Game():
             self.currentMouseTileX = int(pos[0] / TW + self.scrollx / TW)
             self.currentMouseTileY = int(pos[1] / TH)
 
+            if self.respawnMode:
+                if self.currentMouseTileX * TW - self.scrollx > SCR_W / 3:
+                    self.currentMouseTileX = int((self.scrollx + SCR_W / 3) / TW)
+
         if self.mousepressed:
             self.drawTile(screen, TILES['cursor_pressed'], self.currentMouseTileX, self.currentMouseTileY)
         else:
             self.drawTile(screen, TILES['cursor'], self.currentMouseTileX, self.currentMouseTileY)
-        if CURRENTCOOLDOWN < TILECOOLDOWN:
-            cooldownbar = (TILECOOLDOWN - CURRENTCOOLDOWN) / TILECOOLDOWN * TW
-            pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255),
-                                      (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0),
-                                      (self.currentMouseTileX * TW - self.scrollx,
-                                       (self.currentMouseTileY + 1) * TH + 4, cooldownbar, 2) )
+
+        # draw cooldown bar
+        if not self.respawnMode:    # but not in respawn mode
+            if CURRENTCOOLDOWN < TILECOOLDOWN:
+                cooldownbar = (TILECOOLDOWN - CURRENTCOOLDOWN) / TILECOOLDOWN * TW
+                pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255),
+                                        (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0),
+                                        (self.currentMouseTileX * TW - self.scrollx,
+                                        (self.currentMouseTileY + 1) * TH + 4, cooldownbar, 2) )
 
         # draw incoming block
         incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))
@@ -466,6 +479,7 @@ class Game():
         if self.player.dead:
             self.respawnMode = True
             self.currentTile = 'O'
+            self.currentMousePos = (-1,-1)
 
         # update level
         updateDissolveTiles(tick)

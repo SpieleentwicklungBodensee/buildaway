@@ -124,7 +124,7 @@ def debugPrint(stuff):
 
 
 class Player():
-    def __init__(self, x, y):
+    def __init__(self, x, y,lifes):
         self.xpos = x
         self.ypos = y
 
@@ -136,6 +136,7 @@ class Player():
         self.coyoteCount = 0
 
         self.dead = False
+        self.lifes = lifes
 
     def getSprite(self):
         if self.onGround == True:  # self.ydir == 0:
@@ -270,8 +271,10 @@ class Player():
 
 class Game():
     def __init__(self):
+        self.lifes = 3
         self.reset()
         self.levelno = 1
+
 
     def reset(self):
         self.scrollx = 0
@@ -283,8 +286,7 @@ class Game():
         for y in range(len(level)):
             for x in range(len(level[0])):
                 if level[y][x] == 'P':
-                    self.player = Player(x * TW, y * TH)
-
+                    self.player = Player(x * TW, y * TH, self.lifes)
                     # remove the 'P' from level data
                     setTile(x, y, ' ')
 
@@ -303,6 +305,8 @@ class Game():
         self.levelFinishCount = 0
 
         self.respawnMode = False
+        self.gameover = False
+
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
@@ -370,14 +374,27 @@ class Game():
         else:
             DENYSOUND.play()
 
+        if self.respawnMode:
+            self.player = Player(x * TW, (y - 1) * TH, self.lifes)
+            self.respawnMode = False
+
+        # TODO this is probably deprecated
+        # no check if we have some floors or greens there, and make the new block fitting to the others
+        #if getTile(x, y + 1) == 'G':
+        #    setTile(x, y + 1,'F')
+        #if getTile(x, y - 1) == 'G':
+        #    setTile(x, y, 'F')
+        #if getTile(x, y - 1) == 'F':
+        #    setTile(x, y, 'F')
 
     def render(self, screen, font):
         global CURRENTCOOLDOWN
         # draw sky
         screen.fill((64,128,192))
-
+        if self.gameover:
+            font.centerText(screen,'GAME OVER', y=10)            
         #font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
-
+        debugPrint(self.lifes)
         # draw level
         for y in range(len(level)):
             for x in range(len(level[0])):
@@ -450,12 +467,22 @@ class Game():
 
         if self.respawnMode:
             return
+        
+        if self.lifes == 0:
+            self.gameover = True
+            return
 
         if self.levelFinished:
             self.levelFinishCount += 1
             if self.levelFinishCount == 100:
                 self.nextLevel()
             return
+
+        if self.player.dead and not self.gameover:
+            self.lifes = self.lifes - 1
+            if self.lifes > 0: 
+                self.respawnMode = True
+                self.currentTile = 'O'
 
         # update level scroll
         if self.scrollx < min(len(level[0]) * TW - SCR_W, self.door[0]- SCR_W/2):
@@ -476,11 +503,6 @@ class Game():
 
         self.player.update(tick, self.scrollx)
 
-        if self.player.dead:
-            self.respawnMode = True
-            self.currentTile = 'O'
-            self.currentMousePos = (-1,-1)
-
         # update level
         updateDissolveTiles(tick)
 
@@ -495,7 +517,6 @@ class Game():
         level = level_gen.run(self.levelno, 60 + self.levelno * 5, 11);
 
         self.reset()
-
 
 class Application():
     def __init__(self):

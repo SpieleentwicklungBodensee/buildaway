@@ -72,7 +72,7 @@ OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cann
 PLACEABLE_TILES = ['1', 'O']                  # placeable = mouse player will place those
 
 
-level = level_gen.run(1, 60, 11)
+level = None
 
 
 def getTile(x, y):
@@ -271,10 +271,12 @@ class Player():
 
 class Game():
     def __init__(self):
+        global level
+        level = level_gen.run(1, 60, 11)
+
         self.lifes = 3
         self.reset()
         self.levelno = 1
-
 
     def reset(self):
         self.scrollx = 0
@@ -391,8 +393,7 @@ class Game():
         global CURRENTCOOLDOWN
         # draw sky
         screen.fill((64,128,192))
-        if self.gameover:
-            font.centerText(screen,'GAME OVER', y=10)            
+
         #font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
         debugPrint(self.lifes)
         # draw level
@@ -434,13 +435,14 @@ class Game():
                 if self.currentMouseTileX * TW - self.scrollx > SCR_W / 3:
                     self.currentMouseTileX = int((self.scrollx + SCR_W / 3) / TW)
 
-        if self.mousepressed:
-            self.drawTile(screen, TILES['cursor_pressed'], self.currentMouseTileX, self.currentMouseTileY)
-        else:
-            self.drawTile(screen, TILES['cursor'], self.currentMouseTileX, self.currentMouseTileY)
+        if not self.gameover:
+            if self.mousepressed:
+                self.drawTile(screen, TILES['cursor_pressed'], self.currentMouseTileX, self.currentMouseTileY)
+            else:
+                self.drawTile(screen, TILES['cursor'], self.currentMouseTileX, self.currentMouseTileY)
 
         # draw cooldown bar
-        if not self.respawnMode:    # but not in respawn mode
+        if not self.respawnMode and not self.gameover:
             if CURRENTCOOLDOWN < TILECOOLDOWN:
                 cooldownbar = (TILECOOLDOWN - CURRENTCOOLDOWN) / TILECOOLDOWN * TW
                 pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255),
@@ -449,8 +451,9 @@ class Game():
                                         (self.currentMouseTileY + 1) * TH + 4, cooldownbar, 2) )
 
         # draw incoming block
-        incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))
-        self.drawHalfTile(screen, incomingBlock, self.currentMouseTileX, self.currentMouseTileY)
+        if not self.gameover:
+            incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))
+            self.drawHalfTile(screen, incomingBlock, self.currentMouseTileX, self.currentMouseTileY)
 
         # draw congratz message
         if self.levelFinished:
@@ -461,13 +464,18 @@ class Game():
             font.centerText(screen, 'YOU DIED', y=10)
             font.centerText(screen, 'CLICK TO RESPAWN', y=12)
 
+        # draw game over message
+        if self.gameover:
+            font.centerText(screen,'GAME OVER', y=10)
+            font.centerText(screen,'PRESS SPACE OR BUTTON', y=12)
+
     def update(self, tick):
         global CURRENTCOOLDOWN
         CURRENTCOOLDOWN += 1
 
         if self.respawnMode:
             return
-        
+
         if self.lifes == 0:
             self.gameover = True
             return
@@ -480,7 +488,7 @@ class Game():
 
         if self.player.dead and not self.gameover:
             self.lifes = self.lifes - 1
-            if self.lifes > 0: 
+            if self.lifes > 0:
                 self.respawnMode = True
                 self.currentTile = 'O'
 
@@ -529,6 +537,8 @@ class Application():
         self.cooldown = 0
 
         self.tick = 0
+
+        self.shouldRestartGame = False
 
         # init joysticks
         pygame.joystick.init()
@@ -579,6 +589,10 @@ class Application():
             elif e.type == pygame.MOUSEBUTTONUP:
                 self.game.click(False)
 
+                if self.game.gameover:
+                    self.shouldRestartGame = True
+                    return
+
             elif e.type == pygame.KEYUP:
                 if e.key == pygame.K_LEFT or e.key == pygame.K_a:
                     self.game.playerLeft(False)
@@ -588,6 +602,11 @@ class Application():
 
                 elif e.key == pygame.K_UP or e.key == pygame.K_w:
                     self.game.playerJump(False)
+
+                elif e.key == pygame.K_SPACE:
+                    if self.game.gameover:
+                        self.shouldRestartGame = True
+                        return
 
             elif e.type == pygame.CONTROLLERBUTTONDOWN:
                 if e.button == pygame.CONTROLLER_BUTTON_DPAD_LEFT:
@@ -604,6 +623,10 @@ class Application():
                     self.game.playerRight(False)
                 if e.button == pygame.CONTROLLER_BUTTON_A or e.button == pygame.CONTROLLER_BUTTON_B:
                     self.game.playerJump(False)
+
+                if self.game.gameover:
+                    self.shouldRestartGame = True
+                    return
 
             elif e.type == pygame.CONTROLLERAXISMOTION:
                 if e.axis == pygame.CONTROLLER_AXIS_LEFTX:
@@ -639,6 +662,11 @@ class Application():
 
             self.clock.tick(60)
             self.tick += 1
+
+            if self.shouldRestartGame:
+                self.game = Game()
+                self.shouldRestartGame = False
+                print(self.game.player)
 
         pygame.quit()
 

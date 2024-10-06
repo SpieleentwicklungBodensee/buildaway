@@ -262,7 +262,7 @@ class Player():
         # collide with laser
         tilex = int(self.xpos / TW + 0.3)
         tiley = int(self.ypos / TH + 0.5)
-        if getTile(tilex, tiley) == 'l':
+        if getTile(tilex, tiley) in ['l', 'L']:
             self.kill()
 
     def kill(self):

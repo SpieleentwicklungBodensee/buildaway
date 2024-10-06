@@ -26,9 +26,8 @@ DISSOLVE_SPEED = 6
 level_gen = Generator()
 
 pygame.init()
-surf = load('gfx/cursor.png')
-cursor = pygame.cursors.Cursor((0,0), surf)
-pygame.mouse.set_cursor(cursor)
+pygame.mouse.set_visible(False)
+
 pygame.mixer.init()
 pygame.mixer.music.load('sfx/NichtEinFlohWalzerWeitEntfernt.mp3')
 pygame.mixer.music.set_volume(0.1)
@@ -242,11 +241,11 @@ class Player():
 
         # fall into water
         if self.ypos > len(level) * TH + 50:
-            self.dead = True
+            self.kill()
 
         # scrolled out of the screen
         if self.xpos - scrollx  + TW< 0:
-            self.dead = True
+            self.kill()
 
         # coyote jump counter
         if not self.onGround:
@@ -256,7 +255,12 @@ class Player():
         tilex = int(self.xpos / TW + 0.5)
         tiley = int(self.ypos / TH + 0.5)
         if getTile(tilex, tiley) == 'v':
-            self.dead = True
+            self.kill()
+
+    def kill(self):
+        self.dead = True
+        DEATHSOUND.play()
+        self.ypos = -TH * 2
 
 class Game():
     def __init__(self):
@@ -291,6 +295,8 @@ class Game():
 
         self.levelFinished = False
         self.levelFinishCount = 0
+
+        self.respawnMode = False
 
     def drawTile(self, screen, tile, x, y):
         screen.blit(tile, (x * TW - self.scrollx, y * TH + 4))
@@ -327,7 +333,7 @@ class Game():
                 DENYSOUND.play()
                 return
 
-            if CURRENTCOOLDOWN > TILECOOLDOWN:
+            if CURRENTCOOLDOWN > TILECOOLDOWN or self.respawnMode:
                 CURRENTCOOLDOWN = 0
                 setTile(x, y, self.currentTile)
 
@@ -340,20 +346,18 @@ class Game():
                             break
 
                 self.currentTile = random.choice(PLACEABLE_TILES)
+
+                # respawn player if dead
+                if self.respawnMode:
+                    self.player = Player(x * TW, (y - 1) * TH)
+                    self.respawnMode = False
+
                 PLACESOUND.play()
             else:
                 DENYSOUND.play()
         else:
             DENYSOUND.play()
 
-        # TODO this is probably deprecated
-        # no check if we have some floors or greens there, and make the new block fitting to the others
-        #if getTile(x, y + 1) == 'G':
-        #    setTile(x, y + 1,'F')
-        #if getTile(x, y - 1) == 'G':
-        #    setTile(x, y, 'F')
-        #if getTile(x, y - 1) == 'F':
-        #    setTile(x, y, 'F')
 
     def render(self, screen, font):
         global CURRENTCOOLDOWN
@@ -414,6 +418,9 @@ class Game():
         global CURRENTCOOLDOWN
         CURRENTCOOLDOWN += 1
 
+        if self.respawnMode:
+            return
+
         if self.levelFinished:
             self.levelFinishCount += 1
             if self.levelFinishCount == 100:
@@ -440,12 +447,8 @@ class Game():
         self.player.update(tick, self.scrollx)
 
         if self.player.dead:
-            # respawn (for debug)
-            DEATHSOUND.play()
-            self.player.ypos = -TH
-            self.player.xpos = self.scrollx + 5 * TW
-            self.player.ydir = 0
-            self.player.dead = False
+            self.respawnMode = True
+            self.currentTile = 'O'
 
         # update level
         updateDissolveTiles(tick)

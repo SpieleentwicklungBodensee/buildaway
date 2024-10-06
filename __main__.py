@@ -344,15 +344,6 @@ class Game():
             self.player = Player(x * TW, (y - 1) * TH)
             self.respawnMode = False
 
-        # TODO this is probably deprecated
-        # no check if we have some floors or greens there, and make the new block fitting to the others
-        #if getTile(x, y + 1) == 'G':
-        #    setTile(x, y + 1,'F')
-        #if getTile(x, y - 1) == 'G':
-        #    setTile(x, y, 'F')
-        #if getTile(x, y - 1) == 'F':
-        #    setTile(x, y, 'F')
-
     def render(self, screen, font):
         global CURRENTCOOLDOWN
         # draw sky

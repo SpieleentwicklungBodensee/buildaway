@@ -384,7 +384,7 @@ class Game():
         screen.fill((64,128,192))
 
         #font.centerText(screen, 'F12 = TOGGLE SCROLL', y=10)
-        debugPrint(self.lifes)
+        #debugPrint(self.lifes)
         # draw level
         for y in range(len(level)):
             for x in range(len(level[0])):
@@ -447,6 +447,15 @@ class Game():
                                         (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0),
                                         (self.currentMouseTileX * TW - self.scrollx,
                                         (self.currentMouseTileY + 1) * TH + 4, cooldownbar, 2) )
+                
+
+        # draw lifes
+        if self.lifes > 0:
+            alpha_screen = pygame.Surface(pygame.Rect(0, 0, (self.lifes * TW/2+TW/2), TH + 2 ).size, pygame.SRCALPHA)
+            pygame.draw.rect(alpha_screen, (255, 255, 255, 63), alpha_screen.get_rect())
+            screen.blit(alpha_screen, (0, 0, (self.lifes * TW/2+TW/2), TH + 2))
+            for l in range(self.lifes):        
+                screen.blit(TILES['Pi'], ( l * (TW/2), 1))
 
         # draw incoming block
         if not self.gameover:
@@ -467,7 +476,7 @@ class Game():
         if self.gameover:
             font.centerText(screen,'GAME OVER', y=9)
             font.centerText(screen,'PRESS SPACE OR BUTTON', y=11)
-        font.drawText(screen,str(self.score),TW * 2,0)
+        font.drawText(screen,str(self.score),30, 0)
 
     def update(self, tick):
         global CURRENTCOOLDOWN

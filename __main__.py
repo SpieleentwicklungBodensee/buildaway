@@ -264,9 +264,10 @@ class Player():
 
 class Game():
     def __init__(self):
+        self.lifes = 3
         self.reset()
         self.levelno = 1
-        self.lifes = 3
+
 
     def reset(self):
         self.scrollx = 0
@@ -412,6 +413,9 @@ class Game():
         if self.levelFinished:
             font.centerText(screen, 'LEVEL COMPLETE', y=10)
 
+        if self.respawnMode:
+            font.centerText(screen, 'YOU DIED! CLICK TO RESPAWN', y=10)
+
 
     def update(self, tick):
         global CURRENTCOOLDOWN
@@ -429,6 +433,12 @@ class Game():
             if self.levelFinishCount == 100:
                 self.nextLevel()
             return
+
+        if self.player.dead and not self.gameover:
+            self.lifes = self.lifes - 1
+            if self.lifes > 0: 
+                self.respawnMode = True
+                self.currentTile = 'O'
 
         # update level scroll
         if self.scrollx < min(len(level[0]) * TW - SCR_W, self.door[0]- SCR_W/2):
@@ -448,10 +458,6 @@ class Game():
                 self.player.xdir = 0
 
         self.player.update(tick, self.scrollx)
-
-        if self.player.dead and not self.gameover:
-            self.respawnMode = True
-            self.currentTile = 'O'
 
         # update level
         updateDissolveTiles(tick)

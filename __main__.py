@@ -278,6 +278,7 @@ class Game():
         self.lifes = 3
         self.reset()
         self.levelno = 1
+        self.score = 0
 
     def reset(self):
         self.scrollx = 0
@@ -377,19 +378,6 @@ class Game():
         else:
             DENYSOUND.play()
 
-        if self.respawnMode:
-            self.player = Player(x * TW, (y - 1) * TH, self.lifes)
-            self.respawnMode = False
-
-        # TODO this is probably deprecated
-        # no check if we have some floors or greens there, and make the new block fitting to the others
-        #if getTile(x, y + 1) == 'G':
-        #    setTile(x, y + 1,'F')
-        #if getTile(x, y - 1) == 'G':
-        #    setTile(x, y, 'F')
-        #if getTile(x, y - 1) == 'F':
-        #    setTile(x, y, 'F')
-
     def render(self, screen, font):
         global CURRENTCOOLDOWN
         # draw sky
@@ -476,21 +464,24 @@ class Game():
 
         # draw congratz message
         if self.levelFinished:
-            font.centerText(screen, 'LEVEL COMPLETE', y=10)
+            font.centerText(screen, 'LEVEL COMPLETE', y=9)
+            font.centerText(screen, 'PREPARE FOR NEXT LEVEL', y=11)
 
         # draw respawn message
         if self.respawnMode:
-            font.centerText(screen, 'YOU DIED', y=10)
-            font.centerText(screen, 'CLICK TO RESPAWN', y=12)
+            font.centerText(screen, 'YOU DIED', y=9)
+            font.centerText(screen, 'CHOOSE RESPAWN LOCATION', y=11)
 
         # draw game over message
         if self.gameover:
-            font.centerText(screen,'GAME OVER', y=10)
-            font.centerText(screen,'PRESS SPACE OR BUTTON', y=12)
+            font.centerText(screen,'GAME OVER', y=9)
+            font.centerText(screen,'PRESS SPACE OR BUTTON', y=11)
+        font.drawText(screen,str(self.score),30, 0)
 
     def update(self, tick):
         global CURRENTCOOLDOWN
         CURRENTCOOLDOWN += 1
+        self.currentScore = 0
 
         if self.respawnMode:
             return
@@ -529,7 +520,7 @@ class Game():
                 self.player.xdir = 0
 
         self.player.update(tick, self.scrollx)
-
+        self.score += 1
         # update level
         updateDissolveTiles(tick)
 
@@ -545,9 +536,35 @@ class Game():
 
         self.reset()
 
+
+class TitleScreen():
+    def __init__(self):
+        pass
+
+    def render(self, screen, font):
+        screen.fill((40,60,80))
+
+        font.centerText(screen, '"BUILD-A-WAY"', y=3)
+        font.centerText(screen, 'A BODENSEE GAMEJAM 2024 GAME', y=5)
+
+        font.drawText(screen, 'PLAYER 1:', x=2, y=10)
+        font.drawText(screen, 'W A S D', x=2, y=12)
+        font.drawText(screen, 'OR CURSOR KEYS', x=2, y=13)
+        font.drawText(screen, 'OR GAME CONTROLLER', x=2, y=14)
+
+        font.drawText(screen, 'PLAYER 2:', x=29, y=10)
+        font.drawText(screen, 'MOUSE', x=32, y=12)
+
+        font.centerText(screen, 'PRESS SPACE OR BUTTON', y=18)
+
+    def update(self, tick):
+        pass
+
 class Application():
     def __init__(self):
         self.running = True
+        self.mode = 'title'
+
         self.screen = pygame.display.set_mode((SCR_W, SCR_H), flags=pygame.SCALED)
 
         self.font = BitmapFont('gfx/heimatfont.png', 8, 8, [(255, 255, 255)])
@@ -557,7 +574,8 @@ class Application():
 
         self.tick = 0
 
-        self.shouldRestartGame = False
+        self.shouldStartGame = False
+        self.shouldBackToTitle = False
 
         # init joysticks
         pygame.joystick.init()
@@ -609,7 +627,7 @@ class Application():
                 self.game.click(False)
 
                 if self.game.gameover:
-                    self.shouldRestartGame = True
+                    self.shouldBackToTitle = True
                     return
 
             elif e.type == pygame.KEYUP:
@@ -624,7 +642,7 @@ class Application():
 
                 elif e.key == pygame.K_SPACE:
                     if self.game.gameover:
-                        self.shouldRestartGame = True
+                        self.mode = 'title'
                         return
 
             elif e.type == pygame.CONTROLLERBUTTONDOWN:
@@ -644,7 +662,7 @@ class Application():
                     self.game.playerJump(False)
 
                 if self.game.gameover:
-                    self.shouldRestartGame = True
+                    self.shouldBackToTitle = True
                     return
 
             elif e.type == pygame.CONTROLLERAXISMOTION:
@@ -661,30 +679,71 @@ class Application():
             elif e.type == pygame.QUIT:
                 self.running = False
 
+    def controlsForTitle(self):
+        while True:
+            e = pygame.event.poll()
+
+            if not e:
+                break
+
+            if e.type == pygame.KEYUP:
+                if e.key == pygame.K_SPACE:
+                    self.shouldStartGame = True
+
+                elif e.key == pygame.K_ESCAPE:
+                    self.running = False
+
+                elif e.key == pygame.K_F11:
+                    pygame.display.toggle_fullscreen()
+
+            elif e.type == pygame.CONTROLLERBUTTONDOWN:
+                self.shouldStartGame = True
+
+            elif e.type == pygame.MOUSEBUTTONUP:
+                self.shouldStartGame = True
+
     def run(self):
         self.game = Game()
+        self.title = TitleScreen()
 
         while self.running:
 
-            self.game.render(self.screen, self.font)
+            if self.mode == 'game':
 
-            self.font.locate(0, 0)
-            for string in DEBUG_STRINGS:
-                self.font.drawText(self.screen, string)
-            DEBUG_STRINGS.clear()
+                self.game.render(self.screen, self.font)
 
-            pygame.display.flip()
+                self.font.locate(0, 0)
+                for string in DEBUG_STRINGS:
+                    self.font.drawText(self.screen, string)
+                DEBUG_STRINGS.clear()
 
-            self.controls()
+                pygame.display.flip()
 
-            self.game.update(self.tick)
+                self.controls()
+
+                self.game.update(self.tick)
+
+                if self.shouldBackToTitle:
+                    self.shouldBackToTitle = False
+                    self.mode = 'title'
+
+            elif self.mode == 'title':
+                self.title.render(self.screen, self.font)
+
+                pygame.display.flip()
+
+                self.controlsForTitle() # a bit dirty but ok for the jam
+
+                self.title.update(self.tick)
+
+                if self.shouldStartGame:
+                    self.game = Game()
+                    self.shouldStartGame = False
+                    self.mode = 'game'
 
             self.clock.tick(60)
             self.tick += 1
 
-            if self.shouldRestartGame:
-                self.game = Game()
-                self.shouldRestartGame = False
 
         pygame.quit()
 

@@ -537,14 +537,16 @@ class TitleScreen():
 
         font.centerText(screen, '"BUILD-A-WAY"', y=3)
         font.centerText(screen, 'A BODENSEE GAMEJAM 2024 GAME', y=5)
+        font.centerText(screen, 'BY CARRYPOTTER, MCMURC,', y=7)
+        font.centerText(screen, 'ROSOBE, SERIOUS LAG, ZEHA', y=8)
 
-        font.drawText(screen, 'PLAYER 1:', x=2, y=10)
-        font.drawText(screen, 'W A S D', x=2, y=12)
-        font.drawText(screen, 'OR CURSOR KEYS', x=2, y=13)
-        font.drawText(screen, 'OR GAME CONTROLLER', x=2, y=14)
+        font.drawText(screen, 'PLAYER 1:', x=2, y=11)
+        font.drawText(screen, 'W A S D', x=2, y=13)
+        font.drawText(screen, 'OR CURSOR KEYS', x=2, y=14)
+        font.drawText(screen, 'OR GAME CONTROLLER', x=2, y=15)
 
-        font.drawText(screen, 'PLAYER 2:', x=29, y=10)
-        font.drawText(screen, 'MOUSE', x=32, y=12)
+        font.drawText(screen, 'PLAYER 2:', x=29, y=11)
+        font.drawText(screen, 'MOUSE', x=32, y=13)
 
         font.centerText(screen, 'PRESS SPACE OR BUTTON', y=18)
 

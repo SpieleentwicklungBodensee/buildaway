@@ -278,8 +278,7 @@ class Game():
         self.lifes = 3
         self.reset()
         self.levelno = 1
-        self.scores = {0:0}
-        self.currentScore = 0
+        self.score = 0
     
     def reset(self):
         self.scrollx = 0
@@ -480,15 +479,13 @@ class Game():
         if self.gameover:
             font.centerText(screen,'GAME OVER', y=10)
             font.centerText(screen,'PRESS SPACE OR BUTTON', y=12)
-        font.drawText(screen,str(self.currentScore),TW * 2,0)
+        font.drawText(screen,str(self.score),TW * 2,0)
 
     def update(self, tick):
         global CURRENTCOOLDOWN
         CURRENTCOOLDOWN += 1
-        self.scores[self.levelno] = self.scrollx
         self.currentScore = 0
-        for __level in self.scores:
-            self.currentScore = self.currentScore + self.scores[__level]
+
         if self.respawnMode:
             return
 
@@ -526,7 +523,7 @@ class Game():
                 self.player.xdir = 0
 
         self.player.update(tick, self.scrollx)
-
+        self.score += 1
         # update level
         updateDissolveTiles(tick)
 

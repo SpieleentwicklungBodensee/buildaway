@@ -26,9 +26,8 @@ DISSOLVE_SPEED = 6
 level_gen = Generator()
 
 pygame.init()
-surf = load('gfx/cursor.png')
-cursor = pygame.cursors.Cursor((0,0), surf)
-pygame.mouse.set_cursor(cursor)
+pygame.mouse.set_visible(False)
+
 pygame.mixer.init()
 pygame.mixer.music.load('sfx/NichtEinFlohWalzerWeitEntfernt.mp3')
 pygame.mixer.music.set_volume(0.1)
@@ -330,19 +329,22 @@ class Game():
                 DENYSOUND.play()
                 return
 
-            if CURRENTCOOLDOWN > TILECOOLDOWN:
+            if CURRENTCOOLDOWN > TILECOOLDOWN or self.respawnMode:
                 CURRENTCOOLDOWN = 0
                 setTile(x, y,self.currentTile)
                 self.currentTile = random.choice(PLACEABLE_TILES)
+
+                # respawn player if dead
+                if self.respawnMode:
+                    self.player = Player(x * TW, (y - 1) * TH)
+                    self.respawnMode = False
+
                 PLACESOUND.play()
             else:
                 DENYSOUND.play()
         else:
             DENYSOUND.play()
 
-        if self.respawnMode:
-            self.player = Player(x * TW, (y - 1) * TH)
-            self.respawnMode = False
 
     def render(self, screen, font):
         global CURRENTCOOLDOWN

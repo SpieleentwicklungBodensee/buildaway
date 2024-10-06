@@ -51,6 +51,7 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'D': pygame.image.load('gfx/door.png'),
          'v': pygame.image.load('gfx/trapp_g.png'),
          'L': pygame.image.load('gfx/laser_cannon.png'),
+         'LL': pygame.image.load('gfx/laser_cannon_02.png'),
          'l': pygame.image.load('gfx/laser_beam.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
@@ -412,6 +413,15 @@ class Game():
                             tile = '~~~~'
                         #else:
                         #    tile = '~~'
+                    self.drawTile(screen, TILES[tile], x, y)
+
+                    if tile == 'L':
+                        if int(time.time() * 1000) % 500 < 300:
+                            tile = 'L'
+                        if 300 <= int(time.time() * 1000) % 500 < 500:
+                            tile = 'LL'
+                        else:
+                            tile ='L'    
                     self.drawTile(screen, TILES[tile], x, y)
 
         for x in range (len(level[0])):

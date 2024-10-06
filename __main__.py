@@ -335,6 +335,12 @@ class Game():
 
             if CURRENTCOOLDOWN > TILECOOLDOWN or self.respawnMode:
                 CURRENTCOOLDOWN = 0
+
+                if self.respawnMode:
+                    if y == 0:
+                        DENYSOUND.play()
+                        return
+
                 setTile(x, y, self.currentTile)
 
                 if tile == 'l' and y < 11: # last tile was a laser beam

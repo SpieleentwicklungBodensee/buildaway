@@ -26,3 +26,11 @@ Ideen um das Gameplay zu verbessern:
 
 - in die PLACEABLE_TILES auch die Spikes (also 'schlechte' Tiles) aufnehmen, dafuer die Cooldown Time verringern (oder abschaffen)
 - evtl oben einen Tile-Vorrat anzeigen aus dem man als Maus-Spieler das Tile jedesmal auswaehlt, dieser wird automatisch random aufgefuellt
+
+
+
+MUST HAVES:
+- 3 Leben, danach Game Over
+- nach Game Over Neustart des Spiels
+- Respawn nur in der linken Bildhaelfte / nicht auf oder unter vorhandenen Bloecken / nicht in der obersten Zeile / nicht im Wasser
+- "you died" message

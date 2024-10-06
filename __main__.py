@@ -279,7 +279,7 @@ class Game():
         self.reset()
         self.levelno = 1
         self.score = 0
-    
+
     def reset(self):
         self.scrollx = 0
         self.mousepressed = False
@@ -468,17 +468,18 @@ class Game():
 
         # draw congratz message
         if self.levelFinished:
-            font.centerText(screen, 'LEVEL COMPLETE', y=10)
+            font.centerText(screen, 'LEVEL COMPLETE', y=9)
+            font.centerText(screen, 'PREPARE FOR NEXT LEVEL', y=11)
 
         # draw respawn message
         if self.respawnMode:
-            font.centerText(screen, 'YOU DIED', y=10)
-            font.centerText(screen, 'CLICK TO RESPAWN', y=12)
+            font.centerText(screen, 'YOU DIED', y=9)
+            font.centerText(screen, 'CHOOSE RESPAWN LOCATION', y=11)
 
         # draw game over message
         if self.gameover:
-            font.centerText(screen,'GAME OVER', y=10)
-            font.centerText(screen,'PRESS SPACE OR BUTTON', y=12)
+            font.centerText(screen,'GAME OVER', y=9)
+            font.centerText(screen,'PRESS SPACE OR BUTTON', y=11)
         font.drawText(screen,str(self.score),TW * 2,0)
 
     def update(self, tick):

@@ -479,7 +479,7 @@ class Game():
         if self.gameover:
             font.centerText(screen,'GAME OVER', y=10)
             font.centerText(screen,'PRESS SPACE OR BUTTON', y=12)
-        font.drawText(screen,str(self.score),TW * 2,0)
+        font.drawText(screen,str(self.score),30, 0)
 
     def update(self, tick):
         global CURRENTCOOLDOWN

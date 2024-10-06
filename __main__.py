@@ -137,7 +137,7 @@ class Player():
         self.dead = False
 
     def getSprite(self):
-        if self.ydir == 0:
+        if self.onGround == True:  # self.ydir == 0:
             if self.xdir == 0:
                 return TILES['Pi']
             else:

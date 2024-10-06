@@ -50,6 +50,8 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          'O': pygame.image.load('gfx/rock.png'),
          'D': pygame.image.load('gfx/door.png'),
          'v': pygame.image.load('gfx/trapp_g.png'),
+         'L': pygame.image.load('gfx/laser_cannon.png'),
+         'l': pygame.image.load('gfx/laser_beam.png'),
 
          'Pi': pygame.image.load('gfx/player_idle.png'),
          'P1': pygame.image.load('gfx/player_walk_01.png'),
@@ -323,15 +325,26 @@ class Game():
         x = self.currentMouseTileX
         y = self.currentMouseTileY
 
-        if getTile(x, y) == ' ':
+        tile = getTile(x, y)
+
+        if tile == ' ' or tile == 'l':
             # make sure end gate is not overdrawn
-            if getTile(x, y-1) == 'D' or getTile(x-1, y) == 'D' or getTile(x-1, y-1) == 'D':
+            if getTile(x, y-1) == 'D' or getTile(x-1, y) == 'D' or getTile(x-1, y-1) == 'D' or tile == 'L':
                 DENYSOUND.play()
                 return
 
             if CURRENTCOOLDOWN > TILECOOLDOWN or self.respawnMode:
                 CURRENTCOOLDOWN = 0
-                setTile(x, y,self.currentTile)
+                setTile(x, y, self.currentTile)
+
+                if tile == 'l' and y < 11: # last tile was a laser beam
+                    for ly in range(y + 1, 11):
+                        ltile = getTile(x, ly)
+                        if ltile == 'l':
+                            setTile(x, ly, ' ')
+                        else:
+                            break
+
                 self.currentTile = random.choice(PLACEABLE_TILES)
 
                 # respawn player if dead

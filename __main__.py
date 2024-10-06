@@ -257,6 +257,12 @@ class Player():
         if getTile(tilex, tiley) == 'v':
             self.kill()
 
+        # collide with laser
+        tilex = int(self.xpos / TW + 0.3)
+        tiley = int(self.ypos / TH + 0.5)
+        if getTile(tilex, tiley) == 'l':
+            self.kill()
+
     def kill(self):
         self.dead = True
         DEATHSOUND.play()

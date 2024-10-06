@@ -343,7 +343,7 @@ class Game():
                 CURRENTCOOLDOWN = 0
 
                 if self.respawnMode:
-                    if y == 0:
+                    if y == 0 or tile == 'l':
                         DENYSOUND.play()
                         return
 

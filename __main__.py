@@ -421,12 +421,15 @@ class Game():
             self.drawTile(screen, TILES['cursor_pressed'], self.currentMouseTileX, self.currentMouseTileY)
         else:
             self.drawTile(screen, TILES['cursor'], self.currentMouseTileX, self.currentMouseTileY)
-        if CURRENTCOOLDOWN < TILECOOLDOWN:
-            cooldownbar = (TILECOOLDOWN - CURRENTCOOLDOWN) / TILECOOLDOWN * TW
-            pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255),
-                                      (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0),
-                                      (self.currentMouseTileX * TW - self.scrollx,
-                                       (self.currentMouseTileY + 1) * TH + 4, cooldownbar, 2) )
+
+        # draw cooldown bar
+        if not self.respawnMode:    # but not in respawn mode
+            if CURRENTCOOLDOWN < TILECOOLDOWN:
+                cooldownbar = (TILECOOLDOWN - CURRENTCOOLDOWN) / TILECOOLDOWN * TW
+                pygame.draw.rect(screen, (255 - (CURRENTCOOLDOWN / TILECOOLDOWN * 255),
+                                        (CURRENTCOOLDOWN / TILECOOLDOWN * 255) , 0),
+                                        (self.currentMouseTileX * TW - self.scrollx,
+                                        (self.currentMouseTileY + 1) * TH + 4, cooldownbar, 2) )
 
         # draw incoming block
         incomingBlock = pygame.transform.scale(TILES[self.currentTile],(TW/2,TH/2))

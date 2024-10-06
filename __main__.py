@@ -421,7 +421,7 @@ class Game():
                         if 300 <= int(time.time() * 1000) % 500 < 500:
                             tile = 'LL'
                         else:
-                            tile ='L'    
+                            tile ='L'
                     self.drawTile(screen, TILES[tile], x, y)
 
         for x in range (len(level[0])):
@@ -676,7 +676,6 @@ class Application():
             if self.shouldRestartGame:
                 self.game = Game()
                 self.shouldRestartGame = False
-                print(self.game.player)
 
         pygame.quit()
 

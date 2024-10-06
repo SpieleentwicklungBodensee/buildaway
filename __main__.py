@@ -413,6 +413,10 @@ class Game():
             self.currentMouseTileX = int(pos[0] / TW + self.scrollx / TW)
             self.currentMouseTileY = int(pos[1] / TH)
 
+            if self.respawnMode:
+                if self.currentMouseTileX * TW - self.scrollx > SCR_W / 3:
+                    self.currentMouseTileX = int((self.scrollx + SCR_W / 3) / TW)
+
         if self.mousepressed:
             self.drawTile(screen, TILES['cursor_pressed'], self.currentMouseTileX, self.currentMouseTileY)
         else:
@@ -472,6 +476,7 @@ class Game():
         if self.player.dead:
             self.respawnMode = True
             self.currentTile = 'O'
+            self.currentMousePos = (-1,-1)
 
         # update level
         updateDissolveTiles(tick)

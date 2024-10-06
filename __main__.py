@@ -68,7 +68,7 @@ TILES = {'#': pygame.image.load('gfx/wall.png'),
          }
 
 FLOOR_TILES = ['#', '1', '2', '3', 'F', 'G', 'O']       # floor = player can stand on
-OBSTACLES = ['#', 'F', 'G']                             # obstacle = player cannot walk into
+OBSTACLES = ['#', 'F', 'G', 'v']                             # obstacle = player cannot walk into / bump with head into
 
 PLACEABLE_TILES = ['1', 'O']                  # placeable = mouse player will place those
 

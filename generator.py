@@ -177,7 +177,7 @@ class Generator(object):
 
             #if not self.has_element_on_column(data, x, 'P') and cur == ' ' and val > 1 and x > data.doorx + 2 and x < data.doorx - 2:
             nodoor =  not ( (x >= data.doorx - 1) and (x <= data.doorx + 2) )
-            if cur == ' ' and not self.has_element_on_column(data, x, 'P') and nodoor and val > 5:
+            if cur == ' ' and not self.has_element_on_column(data, x, 'P') and nodoor and val > 6:
                 
                 self.change_block(data, x, 0, 'L')
                 for y in range(1, data.height):
